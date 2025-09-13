@@ -1,0 +1,44 @@
+{
+  "name": "behavior-driven-ui-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.0.0",
+  "description": "Behavior-driven UI testing framework with cross-framework validation",
+  "keywords": [
+    "testing",
+    "bdd",
+    "ui-testing",
+    "playwright",
+    "cucumber",
+    "monorepo"
+  ],
+  "license": "MIT",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "lint:check": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "type:check": "turbo run type:check",
+    "quality:check": "pnpm lint:check && pnpm type:check",
+    "pack:tarballs": "pnpm -r --filter ./packages... pack --pack-destination ./dist/tarballs",
+    "e2e:react": "pnpm --filter react-app test",
+    "e2e:next": "pnpm --filter next-app test",
+    "e2e:qwik": "pnpm --filter qwik-app test",
+    "e2e:all": "pnpm e2e:react && pnpm e2e:next && pnpm e2e:qwik",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=9"
+  }
+}
