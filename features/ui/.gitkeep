@@ -1,0 +1,2 @@
+# This file ensures the features/ui/ directory is tracked by Git
+# This directory will contain the actual feature files (*.feature)
