@@ -67,7 +67,9 @@
     "node_modules",
     "dist",
     "**/*.js",
-    "**/*.jsx"
+    "**/*.jsx",
+    "tools/config-validation/src/lint-tests.ts",
+    "tools/config-validation/src/type-tests.ts"
   ],
   "ts-node": {
     "esm": true

@@ -24,6 +24,7 @@
     "format:check": "prettier --check .",
     "format:fix": "prettier --write .",
     "quality:check": "pnpm run lint && pnpm run type:check",
+    "validate:config": "cd tools/config-validation && npm run validate",
     "turbo:lint": "turbo run lint",
     "turbo:lint:fix": "turbo run lint:fix",
     "turbo:type:check": "turbo run type:check",

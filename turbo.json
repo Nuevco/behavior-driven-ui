@@ -118,6 +118,9 @@
     "eslint.config.js",
     ".prettierrc"
   ],
+  "globalPassThroughEnv": [
+    "VALIDATE_CONFIG"
+  ],
   "globalEnv": [
     "NODE_ENV",
     "CI"

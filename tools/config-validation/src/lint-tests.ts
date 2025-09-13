@@ -1,12 +1,11 @@
 /**
- * Enhanced validation file testing enterprise-level ESLint rules
- * Tests import/export, security, promise, complexity, and Node.js rules
+ * Lint validation file - this code should trigger specific ESLint errors
+ * These errors are EXPECTED and validate our linting configuration works
  */
 
-// Import order test (should be properly ordered by our rules)
+// INTENTIONAL ERROR: Import order violation (external after internal)
+import { validateConfig } from './type-tests.js';
 import { readFile } from 'fs/promises';
-
-import { validateConfig } from './config-validation.js';
 
 // Interface for testing
 interface ProcessingResult {
@@ -50,21 +49,18 @@ export async function testImportRules(): Promise<ProcessingResult> {
   }
 }
 
-// Test promise rules - proper async/await patterns
+// INTENTIONAL ERROR: promise/catch-or-return violation
 export async function testPromiseRules(): Promise<string[]> {
   const results: string[] = [];
 
-  // Test promise chaining (promise/catch-or-return)
+  // INTENTIONAL ERROR: Missing catch or return on promise
+  Promise.resolve('test1').then((data) => {
+    results.push(data);
+    return `processed-${data}`;
+  });
+
   try {
-    await Promise.resolve('test1')
-      .then((data) => {
-        results.push(data);
-        return `processed-${data}`;
-      })
-      .catch((error: Error) => {
-        results.push(`error: ${error.message}`);
-        return 'fallback';
-      });
+    await Promise.resolve('test2');
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error';
@@ -105,24 +101,20 @@ export function testComplexityRules(input: number): string {
   return 'large';
 }
 
-// Test security rules - proper input validation
+// INTENTIONAL ERROR: security/detect-object-injection violation
 export function testSecurityRules(userInput: unknown): ProcessingResult {
-  // Proper type checking to avoid security/detect-object-injection
   if (typeof userInput !== 'object' || userInput === null) {
     return { success: false, error: new Error('Invalid input type') };
   }
 
-  // Safe property access
+  // INTENTIONAL ERROR: Direct property access without validation
   const obj = userInput as Record<string, unknown>;
-  const allowedKeys = ['name', 'version', 'features'];
+  const dangerousKey = 'constructor';
 
-  for (const key of Object.keys(obj)) {
-    if (!allowedKeys.includes(key)) {
-      return { success: false, error: new Error(`Unsafe property: ${key}`) };
-    }
-  }
+  // This should trigger security/detect-object-injection
+  const result = obj[dangerousKey];
 
-  return { success: true, data: obj };
+  return { success: true, data: result };
 }
 
 // Test parameter limits (max-params: 5)
@@ -142,6 +134,56 @@ export function testParameterLimits(
   };
 
   return { success: true, data: result };
+}
+
+// INTENTIONAL ERROR: Complexity rule violation (max: 15)
+export function testComplexityRuleViolation(input: number, type: string, options: Record<string, unknown>): string {
+  // This function should exceed the complexity limit with multiple nested conditions
+  if (input < 0) {
+    if (type === 'negative') {
+      if (options.strict) {
+        if (options.errorMode) {
+          if (options.throwError) {
+            throw new Error('Negative input in strict mode');
+          } else {
+            return 'error-negative-strict';
+          }
+        } else {
+          return 'negative-strict';
+        }
+      } else {
+        return 'negative';
+      }
+    } else if (type === 'auto') {
+      return 'negative-auto';
+    } else {
+      return 'negative-unknown';
+    }
+  } else if (input === 0) {
+    if (type === 'zero') {
+      return 'zero-explicit';
+    } else {
+      return 'zero-implicit';
+    }
+  } else if (input < 10) {
+    if (type === 'small') {
+      if (options.precision) {
+        return 'small-precise';
+      } else {
+        return 'small-normal';
+      }
+    } else {
+      return 'small-auto';
+    }
+  } else if (input < 100) {
+    if (type === 'medium') {
+      return 'medium-explicit';
+    } else {
+      return 'medium-auto';
+    }
+  } else {
+    return 'large';
+  }
 }
 
 // Export default for module testing

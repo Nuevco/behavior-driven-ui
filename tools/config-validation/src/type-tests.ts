@@ -1,6 +1,6 @@
 /**
- * Configuration validation test file
- * This file tests our strict TypeScript and ESLint configuration
+ * Type validation file - this code should trigger specific TypeScript errors
+ * These errors are EXPECTED and validate our TypeScript strict configuration works
  */
 
 // Test strict TypeScript settings
@@ -30,31 +30,28 @@ export async function processConfig(config: TestConfig): Promise<string> {
   return Promise.resolve(`Processed: ${config.name} v${config.version}`);
 }
 
-// Test that would fail with any/unknown types (should be caught by our rules)
+// INTENTIONAL ERRORS: TypeScript strict mode violations
 export function strictTypingTest(data: unknown): TestConfig {
-  // This should require proper type guards per our strict rules
-  if (
-    typeof data === 'object' &&
-    data !== null &&
-    'name' in data &&
-    'version' in data
-  ) {
-    const obj = data as Record<string, unknown>;
+  // INTENTIONAL ERROR: Using 'any' type (should be caught by @typescript-eslint/no-explicit-any)
+  const obj = data as any;
 
-    if (typeof obj.name === 'string' && typeof obj.version === 'number') {
-      const features = Array.isArray(obj.features)
-        ? obj.features.filter((f): f is string => typeof f === 'string')
-        : undefined;
+  // INTENTIONAL ERROR: Type mismatch - assigning string to number
+  const badVersion: number = obj.name;
 
-      return {
-        name: obj.name,
-        version: obj.version,
-        ...(features && { features: features as readonly string[] }),
-      };
-    }
-  }
+  // INTENTIONAL ERROR: Property doesn't exist on type
+  const nonExistent: string = obj.thisPropertyDoesNotExist;
 
-  throw new Error('Invalid configuration data');
+  return {
+    name: nonExistent,
+    version: badVersion,
+    features: obj.features,
+  };
+}
+
+// INTENTIONAL ERROR: Another type mismatch
+export function anotherTypeError(): void {
+  const numberValue: number = 'this is a string'; // Type error
+  const stringValue: string = numberValue; // Another type error
 }
 
 // Export default for module testing

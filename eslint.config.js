@@ -27,6 +27,9 @@ export default [
       'claude-flow*',
       '*.config.js',
       '*.config.ts',
+      'tools/config-validation/src/lint-tests.ts',
+      'tools/config-validation/src/type-tests.ts',
+      'tools/config-validation/validate.js',
     ],
   },
 

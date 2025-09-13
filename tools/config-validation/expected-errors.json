@@ -1,0 +1,22 @@
+{
+  "description": "Expected errors from linting and type checking validation files",
+  "lint": {
+    "minErrors": 5,
+    "expectedRules": [
+      "@typescript-eslint/no-unused-vars",
+      "@typescript-eslint/no-floating-promises",
+      "@typescript-eslint/no-unsafe-assignment",
+      "import/order",
+      "security/detect-object-injection",
+      "promise/catch-or-return",
+      "complexity"
+    ]
+  },
+  "typescript": {
+    "minErrors": 2,
+    "expectedPatterns": [
+      "Type 'string' is not assignable to type 'number'",
+      "Property .* does not exist on type"
+    ]
+  }
+}
