@@ -13,10 +13,6 @@
     "monorepo"
   ],
   "license": "MIT",
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
