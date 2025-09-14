@@ -41,9 +41,11 @@
   "dependencies": {
     "@playwright/test": "^1.40.0",
     "@cucumber/cucumber": "^10.0.0",
-    "commander": "^11.0.0"
+    "commander": "^11.0.0",
+    "zod": "^3.22.0"
   },
   "devDependencies": {
+    "@types/node": "^22.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.6.0"
   },

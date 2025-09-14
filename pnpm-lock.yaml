@@ -106,7 +106,13 @@ importers:
       commander:
         specifier: ^11.0.0
         version: 11.1.0
+      zod:
+        specifier: ^3.22.0
+        version: 3.25.76
     devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.18.3
       tsup:
         specifier: ^8.0.0
         version: 8.5.0(typescript@5.9.2)(yaml@2.8.1)
@@ -3155,6 +3161,9 @@ packages:
 
   yup@1.2.0:
     resolution: {integrity: sha512-PPqYKSAXjpRCgLgLKVGPA33v5c/WgEx3wi6NFjIiegz90zSwyMpvTFp/uGcVnnbx6to28pgnzp/q8ih3QRjLMQ==}
+
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
 snapshots:
 
@@ -6614,3 +6623,5 @@ snapshots:
       tiny-case: 1.0.3
       toposort: 2.0.2
       type-fest: 2.19.0
+
+  zod@3.25.76: {}
