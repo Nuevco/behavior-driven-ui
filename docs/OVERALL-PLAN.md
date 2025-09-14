@@ -285,16 +285,94 @@
 
 ### **Step 10: Setup Internal Module Dependencies** - 🔴 NOT_STARTED
 - **Task**: Configure main package dependencies for all internal modules (playwright, cucumber, commander)
-- **Testable**: All required dependencies installed, TypeScript types resolve correctly
 - **Dependencies**: Step 9 complete
 - **Quality Gates**: Dependency versions locked, no unused dependencies, strict TypeScript types
+- **Acceptance Criteria**:
+  - ✅ `package.json` includes all required dependencies with locked versions:
+    - `@playwright/test: ^1.40.0` (for drivers module)
+    - `@cucumber/cucumber: ^10.0.0` (for runners module)
+    - `commander: ^11.0.0` (for CLI module)
+    - `zod: ^3.22.0` (for config validation)
+  - ✅ `package.json` includes all required devDependencies:
+    - `@types/node: ^22.0.0`
+    - TypeScript type packages for all dependencies
+  - ✅ `pnpm install` completes without errors or warnings
+  - ✅ All TypeScript imports resolve correctly (no module resolution errors)
+  - ✅ `pnpm audit` shows no high/critical vulnerabilities
+  - ✅ No unused dependencies detected by `pnpm why` for each package
+  - ✅ All imports use exact type imports where possible (`import type { ... }`)
+  - ✅ Dependencies are compatible with ESM + CJS dual build
+- **Validation Commands**:
+  ```bash
+  # Verify dependency installation
+  pnpm --filter behavior-driven-ui install              # Should complete successfully
+  pnpm --filter behavior-driven-ui audit                # Should show no critical vulnerabilities
+
+  # Test TypeScript resolution
+  pnpm --filter behavior-driven-ui type:check           # Should pass with no module errors
+
+  # Test imports work in both ESM and CJS contexts
+  echo "import { test } from '@playwright/test';" > test-deps.ts
+  echo "import { Given } from '@cucumber/cucumber';" >> test-deps.ts
+  echo "import { Command } from 'commander';" >> test-deps.ts
+  pnpm --filter behavior-driven-ui exec tsc --noEmit test-deps.ts
+  rm test-deps.ts
+
+  # Verify no unused dependencies
+  pnpm --filter behavior-driven-ui exec npx depcheck    # Should show no unused dependencies
+  ```
 - **Commit Message**: `feat: configure dependencies for all internal modules`
 
 ### **Step 11: Create Optional Override Package Skeletons** - 🔴 NOT_STARTED
 - **Task**: Create `behavior-driven-ui-webdriver`, `behavior-driven-ui-jest` optional packages
-- **Testable**: Optional packages install and integrate with main package
 - **Dependencies**: Steps 6, 7 complete
 - **Quality Gates**: Optional packages extend main package without conflicts
+- **Acceptance Criteria**:
+  - ✅ `packages/behavior-driven-ui-webdriver/` directory created with complete structure:
+    - `package.json` with correct metadata (name, version, exports)
+    - `src/index.ts` with WebDriver driver implementation stub
+    - `src/types.ts` with WebDriver-specific type definitions
+    - `tsup.config.ts` for ESM + CJS dual build
+    - `README.md` with usage instructions
+  - ✅ `packages/behavior-driven-ui-jest/` directory created with complete structure:
+    - `package.json` with correct metadata (name, version, exports)
+    - `src/index.ts` with Jest runner implementation stub
+    - `src/types.ts` with Jest-specific type definitions
+    - `tsup.config.ts` for ESM + CJS dual build
+    - `README.md` with usage instructions
+  - ✅ Both packages are properly configured in root workspace:
+    - Added to `pnpm-workspace.yaml`
+    - Included in `turbo.json` pipeline
+    - Can be built via `turbo run build`
+  - ✅ Both packages can install main package as peer dependency:
+    - `"behavior-driven-ui": "workspace:^"` in peerDependencies
+    - No circular dependency conflicts
+  - ✅ All packages pass quality gates independently:
+    - Zero ESLint errors/warnings
+    - Zero TypeScript compilation errors
+    - Successful build output (dist/ directories)
+  - ✅ Optional packages don't break main package functionality
+  - ✅ Package exports are properly typed and accessible
+- **Validation Commands**:
+  ```bash
+  # Verify package structure
+  ls packages/behavior-driven-ui-webdriver/{package.json,src,tsup.config.ts}  # All should exist
+  ls packages/behavior-driven-ui-jest/{package.json,src,tsup.config.ts}       # All should exist
+
+  # Test workspace configuration
+  pnpm install                                          # Should install all packages
+  turbo run build --filter="./packages/*"              # Should build all packages
+
+  # Test individual package quality
+  pnpm --filter behavior-driven-ui-webdriver lint      # Should pass
+  pnpm --filter behavior-driven-ui-webdriver type:check # Should pass
+  pnpm --filter behavior-driven-ui-jest lint           # Should pass
+  pnpm --filter behavior-driven-ui-jest type:check     # Should pass
+
+  # Test peer dependency relationships
+  cd packages/behavior-driven-ui-webdriver && pnpm install # Should resolve peer deps
+  cd packages/behavior-driven-ui-jest && pnpm install      # Should resolve peer deps
+  ```
 - **Commit Message**: `feat: create optional override package skeletons`
 
 ### **Step 12: Implement Core Config System** - 🔴 NOT_STARTED
@@ -324,22 +402,140 @@
 
 ### **Step 13: Implement World Interface** - 🔴 NOT_STARTED
 - **Task**: Add `World` class and `Driver` interface in core module with comprehensive types
-- **Testable**: TypeScript compilation succeeds, exports available from main package, zero lint errors
 - **Dependencies**: Step 12 complete
-- **Quality Gates**:
-  - Interface contracts fully typed
-  - No implicit any types
-  - Comprehensive JSDoc documentation
+- **Quality Gates**: Interface contracts fully typed, no implicit any types, comprehensive JSDoc documentation
+- **Acceptance Criteria**:
+  - ✅ `src/core/world.ts` implements `World` class with complete functionality:
+    - Manages test context and state across scenarios
+    - Provides driver instance access with proper typing
+    - Implements cleanup methods (beforeScenario, afterScenario)
+    - Stores scenario-specific data with typed getters/setters
+    - Handles page object instantiation and management
+  - ✅ `src/core/driver.ts` defines `Driver` interface with all required methods:
+    - Navigation methods: `goto()`, `reload()`, `back()`, `forward()`
+    - Element interaction: `click()`, `type()`, `fill()`, `select()`
+    - Assertion methods: `waitFor()`, `expect()`, `getText()`, `getValue()`
+    - Screenshot methods: `screenshot()`, `fullPageScreenshot()`
+    - Viewport methods: `setViewport()`, `getViewport()`
+  - ✅ All interface methods have comprehensive TypeScript signatures:
+    - Parameter types strictly defined (no `any` types)
+    - Return types explicitly declared with Promise handling
+    - Optional parameters properly marked with `?`
+    - Union types used where appropriate (e.g., selector strings | locator objects)
+  - ✅ Complete JSDoc documentation for all public APIs:
+    - Method descriptions with usage examples
+    - Parameter documentation with types and constraints
+    - Return value documentation
+    - Throws documentation for error conditions
+    - `@example` blocks showing typical usage
+  - ✅ Core types properly exported from main package:
+    - `World` class accessible via `import { World } from 'behavior-driven-ui'`
+    - `Driver` interface accessible for type annotations
+    - Related types (`WorldConfig`, `DriverOptions`) also exported
+  - ✅ Zero lint errors with strict ESLint configuration
+  - ✅ Zero TypeScript errors with strict compilation settings
+  - ✅ Proper error handling with typed custom exceptions
+- **Validation Commands**:
+  ```bash
+  # Verify file structure and exports
+  ls packages/behavior-driven-ui/src/core/{world.ts,driver.ts}     # Should exist
+  grep "export.*World" packages/behavior-driven-ui/src/core/index.ts # Should show export
+  grep "export.*Driver" packages/behavior-driven-ui/src/core/index.ts # Should show export
+
+  # Test TypeScript compilation and types
+  pnpm --filter behavior-driven-ui type:check                      # Should pass
+
+  # Test imports from main package
+  echo "import { World, Driver } from 'behavior-driven-ui';" > test-world.ts
+  echo "const world: World = new World({});" >> test-world.ts
+  echo "const driver: Driver = world.driver;" >> test-world.ts
+  pnpm --filter behavior-driven-ui exec tsc --noEmit test-world.ts
+  rm test-world.ts
+
+  # Verify JSDoc completeness (should show comprehensive documentation)
+  pnpm --filter behavior-driven-ui exec npx typedoc --dry-run src/core/world.ts
+
+  # Test quality gates
+  pnpm --filter behavior-driven-ui lint                            # Should pass
+  pnpm --filter behavior-driven-ui build                           # Should build successfully
+  ```
 - **Commit Message**: `feat: implement World class and Driver interface`
 
 ### **Step 14: Implement Playwright Driver Module** - 🔴 NOT_STARTED
 - **Task**: Basic Playwright `Driver` implementation in drivers module with strict error handling
-- **Testable**: Can access driver via main package export, methods are fully typed, lint passes
 - **Dependencies**: Steps 10, 13 complete
-- **Quality Gates**:
-  - All methods have proper error handling
-  - No unused variables or imports
-  - Full TypeScript coverage
+- **Quality Gates**: All methods have proper error handling, no unused variables or imports, full TypeScript coverage
+- **Acceptance Criteria**:
+  - ✅ `src/drivers/playwright.ts` implements `PlaywrightDriver` class:
+    - Implements all methods from `Driver` interface
+    - Uses Playwright `Page` object for browser automation
+    - Manages browser context and page lifecycle
+    - Handles browser launch options (headless, viewport, etc.)
+  - ✅ All navigation methods implemented with proper error handling:
+    - `goto(url)` - navigates with timeout and error handling
+    - `reload()` - reloads current page with wait conditions
+    - `back()`, `forward()` - history navigation with validation
+  - ✅ All element interaction methods implemented:
+    - `click(selector)` - clicks with element visibility checks
+    - `type(selector, text)` - types with focus and clear options
+    - `fill(selector, value)` - fills input fields with validation
+    - `select(selector, options)` - handles select dropdowns
+  - ✅ All assertion/wait methods implemented:
+    - `waitFor(selector, options)` - waits with configurable timeout
+    - `expect(selector, condition)` - assertion methods with clear error messages
+    - `getText(selector)` - extracts text with proper null handling
+    - `getValue(selector)` - gets input values with type safety
+  - ✅ Screenshot functionality implemented:
+    - `screenshot(options)` - captures element or viewport screenshots
+    - `fullPageScreenshot(path)` - captures full page with proper file handling
+  - ✅ Viewport management implemented:
+    - `setViewport(width, height)` - changes viewport with validation
+    - `getViewport()` - returns current viewport dimensions
+  - ✅ Comprehensive error handling throughout:
+    - All methods wrapped in try-catch with typed error messages
+    - Custom error classes for different failure types
+    - Proper error propagation to test framework
+    - Timeout errors clearly distinguished from other failures
+  - ✅ Driver configuration and initialization:
+    - Constructor accepts typed configuration options
+    - Proper browser/context setup and teardown methods
+    - Resource cleanup in destroy/close methods
+  - ✅ Complete TypeScript coverage:
+    - All method signatures match `Driver` interface exactly
+    - Private methods and properties properly typed
+    - No `any` types used anywhere in implementation
+    - Proper use of Playwright's TypeScript definitions
+  - ✅ Driver accessible from main package:
+    - Exported from `src/drivers/index.ts`
+    - Re-exported from main `src/index.ts`
+    - Can be imported as `import { PlaywrightDriver } from 'behavior-driven-ui'`
+  - ✅ Zero lint errors and warnings
+  - ✅ All imports used (no unused variables or imports)
+  - ✅ Follows established code patterns and conventions
+- **Validation Commands**:
+  ```bash
+  # Verify implementation file exists
+  ls packages/behavior-driven-ui/src/drivers/playwright.ts        # Should exist
+
+  # Test TypeScript compilation
+  pnpm --filter behavior-driven-ui type:check                     # Should pass
+
+  # Test driver import and instantiation
+  echo "import { PlaywrightDriver, Driver } from 'behavior-driven-ui';" > test-driver.ts
+  echo "const driver: Driver = new PlaywrightDriver({ headless: true });" >> test-driver.ts
+  pnpm --filter behavior-driven-ui exec tsc --noEmit test-driver.ts
+  rm test-driver.ts
+
+  # Test quality gates
+  pnpm --filter behavior-driven-ui lint                           # Should pass with 0 errors/warnings
+
+  # Test build includes driver
+  pnpm --filter behavior-driven-ui build                          # Should build successfully
+  node -e "const { PlaywrightDriver } = require('./packages/behavior-driven-ui/dist/index.js'); console.log(typeof PlaywrightDriver);"
+
+  # Verify no unused imports (should show clean output)
+  pnpm --filter behavior-driven-ui exec npx unimported           # Should show no unused imports
+  ```
 - **Commit Message**: `feat: implement Playwright driver module with strict quality standards`
 
 ---
