@@ -1,0 +1,52 @@
+{
+  "name": "@nuevco/free-paths",
+  "version": "0.1.0",
+  "description": "Universal path resolution that works in either module system",
+  "keywords": [
+    "paths",
+    "esm",
+    "cjs",
+    "modules",
+    "cross-platform",
+    "universal"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "pnpm run lint && pnpm run type:check && tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "type:check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "callsites": "^3.1.0",
+    "pkg-dir": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/pkg-dir": "^2.0.1",
+    "tsup": "^8.0.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=9"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -34,7 +34,15 @@
     "bdui:lint:fix": "pnpm --filter behavior-driven-ui lint:fix",
     "bdui:type:check": "pnpm --filter behavior-driven-ui type:check",
     "bdui:test": "pnpm --filter behavior-driven-ui test",
-    "bdui:clean": "pnpm --filter behavior-driven-ui clean"
+    "bdui:clean": "pnpm --filter behavior-driven-ui clean",
+    "free-paths:build": "pnpm --filter @nuevco/free-paths build",
+    "free-paths:test": "pnpm --filter @nuevco/free-paths test",
+    "free-paths:lint": "pnpm --filter @nuevco/free-paths lint",
+    "esm-app:build": "pnpm --filter esm-app build",
+    "esm-app:test": "pnpm --filter esm-app test",
+    "cjs-app:build": "pnpm --filter cjs-app build",
+    "cjs-app:test": "pnpm --filter cjs-app test",
+    "test:apps": "pnpm esm-app:test && pnpm cjs-app:test"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
