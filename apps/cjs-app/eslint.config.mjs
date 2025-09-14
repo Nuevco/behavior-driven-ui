@@ -25,6 +25,14 @@ export default [
         afterAll: 'readonly',
         jest: 'readonly'
       }
+    },
+    rules: {
+      // Allow require() in CommonJS projects
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off'
     }
   }
 ];

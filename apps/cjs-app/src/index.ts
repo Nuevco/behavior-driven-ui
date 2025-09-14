@@ -1,4 +1,4 @@
-import { PathTester } from './tester.js';
+import { PathTester } from './tester';
 
 const tester = new PathTester();
 const results = tester.runAllTests();

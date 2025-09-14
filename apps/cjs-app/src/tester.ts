@@ -1,20 +1,16 @@
-import {
-  getCurrentDir,
-  getCurrentFile,
-  getProjectRoot,
-} from '@nuevco/free-paths';
+const freePaths = require('@nuevco/free-paths');
 
 export class PathTester {
   testGetCurrentDir(): string {
-    return getCurrentDir();
+    return freePaths.getCurrentDir();
   }
 
   testGetCurrentFile(): string {
-    return getCurrentFile();
+    return freePaths.getCurrentFile();
   }
 
   testGetProjectRoot(): string {
-    return getProjectRoot();
+    return freePaths.getProjectRoot();
   }
 
   runAllTests(): Record<string, string> {
@@ -25,3 +21,5 @@ export class PathTester {
     };
   }
 }
+
+module.exports = { PathTester };
