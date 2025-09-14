@@ -1,27 +1,18 @@
 /**
- * Core module - Configuration system, World class, and Driver interface
+ * Core functionality for behavior-driven-ui
+ *
+ * This module exports the fundamental building blocks of the framework:
+ * - Configuration system
+ * - World class for test context management
+ * - Driver interface for browser automation
  */
 
-// Export core configuration function (placeholder for Step 12)
-export function defineConfig(
-  config: Record<string, unknown>
-): Record<string, unknown> {
-  // TODO: Implement in Step 12 - Core Config System
-  return config;
-}
+// Configuration system
+export * from './config.js';
 
-// Export core types and interfaces (placeholder for Step 13)
-export interface Driver {
-  // TODO: Implement in Step 13 - World Interface
-  name: string;
-}
+// World class and driver interface
+export * from './world.js';
+export * from './driver.js';
 
-export class World {
-  // TODO: Implement in Step 13 - World Interface
-  readonly initialized = true;
-}
-
-// Export defineSteps function (placeholder for Step 15)
-export function defineSteps(): void {
-  // TODO: Implement in Step 15 - Preset Implementation
-}
+// Core types
+export * from './types.js';
