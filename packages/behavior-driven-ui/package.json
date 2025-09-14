@@ -1,0 +1,57 @@
+{
+  "name": "behavior-driven-ui",
+  "version": "0.1.0",
+  "description": "Behavior-driven UI testing framework with cross-framework validation",
+  "keywords": [
+    "testing",
+    "bdd",
+    "ui-testing",
+    "playwright",
+    "cucumber",
+    "behavior-driven",
+    "e2e",
+    "cross-framework"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "bin": {
+    "bdui": "./dist/cli.js"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "pnpm run lint && pnpm run type:check && tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "type:check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.40.0",
+    "@cucumber/cucumber": "^10.0.0",
+    "commander": "^11.0.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=9"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
