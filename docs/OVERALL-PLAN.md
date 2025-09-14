@@ -74,59 +74,59 @@
 - **Quality Gates**: Directory structure validation script
 - **Commit Message**: `feat: create monorepo directory structure`
 
-### **Step 6: Initialize Core Package Skeleton** - 🔴 NOT_STARTED
-- **Task**: Create `packages/core/package.json` with TypeScript setup and strict linting
-- **Testable**: `pnpm --filter core install` works, `pnpm --filter core lint` passes
+### **Step 6: Initialize Main Package (behavior-driven-ui)** - 🔴 NOT_STARTED
+- **Task**: Create `packages/behavior-driven-ui/package.json` with comprehensive internal module structure
+- **Testable**: `pnpm --filter behavior-driven-ui install` works, `pnpm --filter behavior-driven-ui lint` passes
 - **Dependencies**: Steps 3, 5 complete
-- **Quality Gates**: Package inherits root lint config, TypeScript strict mode
-- **Commit Message**: `feat: initialize core package with strict quality standards`
+- **Quality Gates**: Package inherits root lint config, TypeScript strict mode, internal modules properly structured
+- **Commit Message**: `feat: initialize main behavior-driven-ui package with internal modules`
 
-### **Step 7: Setup Core Package Build System** - 🔴 NOT_STARTED
-- **Task**: Add `tsup` configuration with build-time lint checks
-- **Testable**: `pnpm --filter core build` produces `dist/` output, fails if lint errors
+### **Step 7: Setup Main Package Build System** - 🔴 NOT_STARTED
+- **Task**: Add `tsup` configuration with internal module bundling and build-time lint checks
+- **Testable**: `pnpm --filter behavior-driven-ui build` produces unified `dist/` output, fails if lint errors
 - **Dependencies**: Step 6 complete
-- **Quality Gates**: Build script runs lint before compilation
-- **Commit Message**: `feat: configure core package build system with quality gates`
+- **Quality Gates**: Build script bundles internal modules, runs lint before compilation, produces ESM + CJS
+- **Commit Message**: `feat: configure main package build system with internal module bundling`
 
 ### **Step 8: Setup Root-Level Quality Scripts** - 🔴 NOT_STARTED
-- **Task**: Add `lint:check`, `lint:fix`, `type:check`, `quality:check` scripts
+- **Task**: Update quality scripts for simplified package structure
 - **Testable**: All quality scripts pass, build integrates quality checks
 - **Dependencies**: Steps 3, 4 complete
 - **Quality Gates**:
-  - `pnpm lint:check` - fails build if errors
+  - `pnpm lint` - fails build if errors
   - `pnpm type:check` - fails build if TS errors
   - `pnpm quality:check` - runs both lint and type checks
-- **Commit Message**: `feat: add root-level quality assurance scripts`
+- **Commit Message**: `feat: update root-level quality assurance scripts for single package`
 
 ---
 
-## **PHASE 2: CORE LIBRARY IMPLEMENTATION** (8 Steps)
+## **PHASE 2: INTERNAL MODULE STRUCTURE** (6 Steps)
 
-### **Step 9: Create Driver-Playwright Package Skeleton** - 🔴 NOT_STARTED
-- **Task**: Create `packages/driver-playwright/package.json` with strict config
-- **Testable**: Package installs, inherits lint rules, depends on `@playwright/test`
+### **Step 9: Create Internal Module Structure** - 🔴 NOT_STARTED
+- **Task**: Create internal modules `core/`, `drivers/`, `runners/`, `presets/`, `cli/` within main package
+- **Testable**: Module structure is organized, imports work correctly, lint passes
 - **Dependencies**: Steps 6, 7 complete
-- **Quality Gates**: Strict TypeScript, comprehensive ESLint rules
-- **Commit Message**: `feat: create driver-playwright package skeleton`
+- **Quality Gates**: Internal modules follow consistent structure, proper TypeScript module resolution
+- **Commit Message**: `feat: create internal module structure for main package`
 
-### **Step 10: Create Runner-Cucumber Package Skeleton** - 🔴 NOT_STARTED
-- **Task**: Create `packages/runner-cucumber/package.json` with strict config
-- **Testable**: Package installs, inherits lint rules, depends on `@cucumber/cucumber`
-- **Dependencies**: Steps 6, 7 complete
-- **Quality Gates**: Strict TypeScript, comprehensive ESLint rules
-- **Commit Message**: `feat: create runner-cucumber package skeleton`
+### **Step 10: Setup Internal Module Dependencies** - 🔴 NOT_STARTED
+- **Task**: Configure main package dependencies for all internal modules (playwright, cucumber, commander)
+- **Testable**: All required dependencies installed, TypeScript types resolve correctly
+- **Dependencies**: Step 9 complete
+- **Quality Gates**: Dependency versions locked, no unused dependencies, strict TypeScript types
+- **Commit Message**: `feat: configure dependencies for all internal modules`
 
-### **Step 11: Create Additional Package Skeletons** - 🔴 NOT_STARTED
-- **Task**: Create `preset-default` and `cli` package skeletons
-- **Testable**: All packages install and pass quality checks
+### **Step 11: Create Optional Override Package Skeletons** - 🔴 NOT_STARTED
+- **Task**: Create `behavior-driven-ui-webdriver`, `behavior-driven-ui-jest` optional packages
+- **Testable**: Optional packages install and integrate with main package
 - **Dependencies**: Steps 6, 7 complete
-- **Quality Gates**: All packages inherit strict quality standards
-- **Commit Message**: `feat: create preset-default and cli package skeletons`
+- **Quality Gates**: Optional packages extend main package without conflicts
+- **Commit Message**: `feat: create optional override package skeletons`
 
 ### **Step 12: Implement Core Config System** - 🔴 NOT_STARTED
-- **Task**: Add `defineConfig` function with strict TypeScript types
-- **Testable**: Can import and call `defineConfig()`, zero TS errors
-- **Dependencies**: Step 7 complete
+- **Task**: Add `defineConfig` function in core module with strict TypeScript types
+- **Testable**: Can import and call `defineConfig()` from main package, zero TS errors
+- **Dependencies**: Step 10 complete
 - **Quality Gates**:
   - Full type coverage for config options
   - Runtime validation of config parameters
@@ -134,8 +134,8 @@
 - **Commit Message**: `feat: implement core configuration system with strict typing`
 
 ### **Step 13: Implement World Interface** - 🔴 NOT_STARTED
-- **Task**: Add `World` class and `Driver` interface with comprehensive types
-- **Testable**: TypeScript compilation succeeds, exports available, zero lint errors
+- **Task**: Add `World` class and `Driver` interface in core module with comprehensive types
+- **Testable**: TypeScript compilation succeeds, exports available from main package, zero lint errors
 - **Dependencies**: Step 12 complete
 - **Quality Gates**:
   - Interface contracts fully typed
@@ -143,35 +143,15 @@
   - Comprehensive JSDoc documentation
 - **Commit Message**: `feat: implement World class and Driver interface`
 
-### **Step 14: Implement Playwright Driver** - 🔴 NOT_STARTED
-- **Task**: Basic Playwright `Driver` implementation with strict error handling
-- **Testable**: Can instantiate driver, methods are fully typed, lint passes
-- **Dependencies**: Steps 9, 13 complete
+### **Step 14: Implement Playwright Driver Module** - 🔴 NOT_STARTED
+- **Task**: Basic Playwright `Driver` implementation in drivers module with strict error handling
+- **Testable**: Can access driver via main package export, methods are fully typed, lint passes
+- **Dependencies**: Steps 10, 13 complete
 - **Quality Gates**:
   - All methods have proper error handling
   - No unused variables or imports
   - Full TypeScript coverage
-- **Commit Message**: `feat: implement Playwright driver with strict quality standards`
-
-### **Step 15: Create Preset-Default Implementation** - 🔴 NOT_STARTED
-- **Task**: Step definitions with comprehensive type safety
-- **Testable**: Can import steps, all functions typed, zero lint errors
-- **Dependencies**: Steps 13, 14 complete
-- **Quality Gates**:
-  - Step functions have proper parameter typing
-  - Error scenarios handled with typed exceptions
-  - Full test coverage of step definitions
-- **Commit Message**: `feat: implement preset-default step definitions`
-
-### **Step 16: Implement Runner-Cucumber Integration** - 🔴 NOT_STARTED
-- **Task**: Cucumber-js wrapper with strict error handling and typing
-- **Testable**: Can run cucumber with minimal feature, passes all quality checks
-- **Dependencies**: Step 10 complete
-- **Quality Gates**:
-  - Feature loading has comprehensive error handling
-  - All async operations properly typed
-  - Integration tests pass quality gates
-- **Commit Message**: `feat: implement cucumber runner with strict quality standards`
+- **Commit Message**: `feat: implement Playwright driver module with strict quality standards`
 
 ---
 

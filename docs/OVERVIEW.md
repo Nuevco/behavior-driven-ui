@@ -40,17 +40,18 @@ behavior-driven-ui/
 
 ### Workspace dependency strategy
 
-* All apps consume the library via **workspace protocol** so they always use the latest **built** package artifacts:
+* All apps consume the main library via **workspace protocol** so they always use the latest **built** package artifacts:
 
   * In each app `package.json`:
 
     ```json
     {
       "dependencies": {
-        "behavior-driven-ui": "workspace:^",
-        "@bdui/driver-playwright": "workspace:^",
-        "@bdui/runner-cucumber": "workspace:^",
-        "@bdui/preset-default": "workspace:^"
+        "behavior-driven-ui": "workspace:^"
+      },
+      "optionalDependencies": {
+        "behavior-driven-ui-webdriver": "workspace:^",
+        "behavior-driven-ui-jest": "workspace:^"
       }
     }
     ```
@@ -101,27 +102,32 @@ behavior-driven-ui/
 
 ## 3) Package outlines
 
-### packages/core
+### packages/behavior-driven-ui (Main Package)
 
-* Exports: `defineConfig`, `defineSteps`, `World`, `Driver` interface, config loader.
-* Dist: ESM + CJS (`dist/esm`, `dist/cjs`).
+* **Exports**: `defineConfig`, `defineSteps`, `World`, `Driver` interface, config loader, built-in drivers, runners, presets, CLI
+* **Internal Structure**:
+  - `core/` - Configuration system, World class, Driver interface
+  - `drivers/` - Playwright driver implementation (default)
+  - `runners/` - Cucumber.js wrapper and integration
+  - `presets/` - Built-in step definitions (navigation, forms, gestures, assertions)
+  - `cli/` - CLI commands (`bdui cucumber`, `bdui doctor`, `bdui pack`)
+* **Dist**: Single optimized bundle (ESM + CJS) with tree-shaking support
+* **Dependencies**: Includes Playwright, Cucumber.js, Commander.js internally
 
-### packages/driver-playwright
+### packages/behavior-driven-ui-webdriver (Optional Override)
 
-* Implements `Driver` (click, type, drag, viewport, screenshot, mocks via route interception, headed/headless toggle).
+* Alternative WebDriver implementation for Selenium-based testing
+* Replaces default Playwright driver when installed
 
-### packages/runner-cucumber
+### packages/behavior-driven-ui-jest (Optional Override)
 
-* Wraps cucumber-js: auto-loads shared **features/** and app-specific `tests/bdui/steps/**`.
-* Maps Scenarios → individual test cases.
+* Alternative Jest runner for Jest-based test execution
+* Replaces default Cucumber runner when installed
 
-### packages/preset-default
+### packages/behavior-driven-ui-cypress (Optional Override)
 
-* Built-in, documented step catalog (navigation, forms, gestures, assertions, screenshots, responsive, mocks).
-
-### packages/cli (bin: `bdui`)
-
-* Commands: `bdui cucumber`, `bdui doctor`, `bdui pack`.
+* Alternative Cypress driver for Cypress-based testing
+* Provides Cypress integration when needed
 
 ---
 
@@ -196,10 +202,10 @@ export default {
 
 ### CI & cross-environment consistency
 
-* Produce **tarballs** for each package and install those in each app during CI:
+* Produce **tarballs** for the main package and optional overrides during CI:
 
-  1. `pnpm pack:tarballs` → creates `dist/tarballs/*.tgz` for all packages.
-  2. For each app, `pnpm add -w ./dist/tarballs/behavior-driven-ui-<version>.tgz` (and the other packages) to force install the **exact** build artifacts.
+  1. `pnpm pack:tarballs` → creates `dist/tarballs/behavior-driven-ui-<version>.tgz` and optional override packages.
+  2. For each app, `pnpm add -w ./dist/tarballs/behavior-driven-ui-<version>.tgz` to force install the **exact** build artifacts.
 * This simulates “real npm installs” without publishing.
 
 ### Optional: Changesets for versioning
