@@ -134,7 +134,7 @@
   ```
 - **Commit Message**: `feat: create monorepo directory structure`
 
-### **Step 6: Initialize Main Package (behavior-driven-ui)** - 🔴 NOT_STARTED
+### **Step 6: Initialize Main Package (behavior-driven-ui)** - 🟢 COMPLETE
 - **Task**: Create `packages/behavior-driven-ui/package.json` with comprehensive internal module structure
 - **Dependencies**: Steps 3, 5 complete
 - **Quality Gates**: Package inherits root lint config, TypeScript strict mode, internal modules properly structured
@@ -157,6 +157,23 @@
   cat packages/behavior-driven-ui/package.json       # Should show correct name and structure
   ```
 - **Commit Message**: `feat: initialize main behavior-driven-ui package with internal modules`
+
+### **Step 6.1: Root Package Script Optimization** - 🟢 COMPLETE
+- **Task**: Clean up root package.json scripts and add BDUI shortcuts
+- **Dependencies**: Step 6 complete
+- **Quality Gates**: Eliminated redundant scripts, improved developer experience
+- **Acceptance Criteria**:
+  - ✅ Removed redundant `turbo:*` scripts (8 scripts eliminated)
+  - ✅ Added `bdui:*` shortcuts for common operations
+  - ✅ Organized scripts into logical categories
+  - ✅ All shortcuts tested and working
+- **Validation Commands**:
+  ```bash
+  pnpm bdui:lint      # Should work
+  pnpm bdui:build     # Should work
+  pnpm bdui:type:check # Should work
+  ```
+- **Commit Message**: `refactor: clean up root package scripts and add BDUI shortcuts`
 
 ### **Step 7: Setup Main Package Build System** - 🔴 NOT_STARTED
 - **Task**: Add `tsup` configuration with internal module bundling and build-time lint checks
