@@ -256,7 +256,7 @@
 
 ---
 
-## **PHASE 2: INTERNAL MODULE STRUCTURE** (6 Steps)
+## **PHASE 2: INTERNAL MODULE STRUCTURE** (8 Steps)
 
 ### **Step 9: Create Internal Module Structure** ✅ **COMPLETE**
 
@@ -557,9 +557,198 @@
   ```
 - **Commit Message**: `feat: implement Playwright driver module with strict quality standards`
 
+### **Step 15: Create Preset-Default Implementation** - 🔴 NOT_STARTED
+- **Task**: Create default step definitions in presets module with comprehensive type safety and common Gherkin patterns
+- **Dependencies**: Steps 13, 14 complete
+- **Quality Gates**: All step functions have proper parameter typing, error scenarios handled with typed exceptions, full TypeScript coverage
+- **Acceptance Criteria**:
+  - ✅ `src/presets/default.ts` implements comprehensive step definition library:
+    - Navigation steps: "I navigate to {string}", "I am on the {string} page"
+    - Element interaction steps: "I click {string}", "I fill {string} with {string}", "I select {string} from {string}"
+    - Assertion steps: "I should see {string}", "I should not see {string}", "{string} should be visible/hidden/enabled/disabled"
+    - Wait steps: "I wait for {string}", "I wait {int} seconds", "I wait until {string} is visible"
+    - Form steps: "I submit the form", "I clear {string}", "I check {string}", "I uncheck {string}"
+  - ✅ All step functions properly typed with World context:
+    - Functions use `this: World` context for proper typing
+    - Parameter types strictly defined (string, int, float, datatable)
+    - Return types explicitly declared as `Promise<void>`
+    - No `any` types used anywhere in step definitions
+  - ✅ Comprehensive error handling in all steps:
+    - Element not found scenarios handled with clear error messages
+    - Timeout errors properly propagated with context
+    - Validation errors include expected vs actual values
+    - Network errors handled gracefully with retry logic
+  - ✅ Step definition registration and export:
+    - Functions exported as named exports for selective importing
+    - Default export provides complete step definition set
+    - Compatible with Cucumber.js step definition format
+    - Proper JSDoc documentation for all step functions
+  - ✅ Page object integration support:
+    - Steps can utilize World's `createPageObject` method
+    - Common page object patterns included (LoginPage, FormPage examples)
+    - Step definitions demonstrate page object best practices
+  - ✅ Data management integration:
+    - Steps utilize World's data storage (`setData`, `getData`)
+    - Examples of data sharing between steps
+    - Support for scenario-specific test data
+  - ✅ Preset accessible from main package:
+    - Exported from `src/presets/index.ts`
+    - Re-exported from main `src/index.ts`
+    - Can be imported as `import { defaultSteps } from 'behavior-driven-ui'`
+  - ✅ Complete TypeScript coverage:
+    - All step functions have explicit type annotations
+    - Parameter destructuring properly typed
+    - Cucumber.js types integration
+    - No implicit any types
+  - ✅ Zero lint errors and warnings
+  - ✅ All imports used (no unused variables or imports)
+  - ✅ Follows established code patterns and conventions
+- **Validation Commands**:
+  ```bash
+  # Verify implementation file exists
+  ls packages/behavior-driven-ui/src/presets/default.ts            # Should exist
+  ls packages/behavior-driven-ui/src/presets/index.ts             # Should exist
+
+  # Test TypeScript compilation
+  pnpm --filter behavior-driven-ui type:check                     # Should pass
+
+  # Test step definitions import and typing
+  echo "import { defaultSteps, World } from 'behavior-driven-ui';" > test-steps.ts
+  echo "const steps = defaultSteps;" >> test-steps.ts
+  echo "// Verify step function typing" >> test-steps.ts
+  echo "const testStep: (this: World, selector: string) => Promise<void> = steps.clickElement;" >> test-steps.ts
+  pnpm --filter behavior-driven-ui exec tsc --noEmit test-steps.ts
+  rm test-steps.ts
+
+  # Test quality gates
+  pnpm --filter behavior-driven-ui lint                           # Should pass with 0 errors/warnings
+
+  # Test build includes presets
+  pnpm --filter behavior-driven-ui build                          # Should build successfully
+  node -e "const { defaultSteps } = require('./packages/behavior-driven-ui/dist/index.js'); console.log(typeof defaultSteps);"
+
+  # Verify step function count (should have 15+ common steps)
+  node -e "const { defaultSteps } = require('./packages/behavior-driven-ui/dist/index.js'); console.log('Step count:', Object.keys(defaultSteps).length);"
+
+  # Verify no unused imports
+  pnpm --filter behavior-driven-ui exec npx unimported           # Should show no unused imports
+  ```
+- **Commit Message**: `feat: implement default step definitions preset with comprehensive typing`
+
+### **Step 16: Implement Runner-Cucumber Integration** - 🔴 NOT_STARTED
+- **Task**: Create Cucumber.js runner implementation in runners module with comprehensive error handling and World integration
+- **Dependencies**: Steps 10, 13 complete
+- **Quality Gates**: Feature loading has comprehensive error handling, all async operations properly typed, full TypeScript coverage
+- **Acceptance Criteria**:
+  - ✅ `src/runners/cucumber.ts` implements comprehensive Cucumber.js integration:
+    - `CucumberRunner` class with typed configuration options
+    - Feature file loading with glob pattern support
+    - Step definition registration and discovery
+    - World instance creation and lifecycle management
+    - Test execution with proper error propagation
+  - ✅ Feature file loading and validation:
+    - Supports glob patterns for feature file discovery (`**/*.feature`)
+    - Validates Gherkin syntax with helpful error messages
+    - Feature file parsing with type-safe scenario extraction
+    - Support for tags, backgrounds, and scenario outlines
+    - Error handling for malformed or missing feature files
+  - ✅ Step definition registration system:
+    - Automatic discovery of step definition files (`**/*.steps.ts`)
+    - Support for TypeScript step definition files
+    - Integration with preset step definitions (from Step 15)
+    - Type-safe step function registration
+    - Conflict detection for duplicate step patterns
+  - ✅ World integration and lifecycle:
+    - Creates World instance per scenario with proper configuration
+    - Manages World lifecycle (beforeScenario, afterScenario, destroy)
+    - Passes World context to step definitions via `this` binding
+    - Handles World creation errors with clear error messages
+    - Proper cleanup on test completion or failure
+  - ✅ Test execution engine:
+    - Runs scenarios sequentially or in parallel (configurable)
+    - Captures and reports step execution results
+    - Handles timeouts with configurable values
+    - Proper error propagation from steps to runner
+    - Screenshot capture on failure (if driver supports it)
+  - ✅ Configuration integration:
+    - Uses `BehaviorDrivenUIConfig` for runner configuration
+    - Supports all config options (features, steps, driver, etc.)
+    - Environment variable overrides
+    - Tag-based configuration overrides
+    - Validation of runner-specific config options
+  - ✅ Comprehensive error handling:
+    - Feature parsing errors with line/column information
+    - Step definition loading errors with file paths
+    - World creation and lifecycle errors
+    - Driver initialization and cleanup errors
+    - Test execution errors with full stack traces
+  - ✅ Reporting and output:
+    - Progress reporting during test execution
+    - Summary statistics (passed/failed/skipped scenarios)
+    - Detailed error reporting with step context
+    - Integration with standard test reporters
+    - JSON and JUnit XML output formats
+  - ✅ Runner accessible from main package:
+    - Exported from `src/runners/index.ts`
+    - Re-exported from main `src/index.ts`
+    - Can be imported as `import { CucumberRunner } from 'behavior-driven-ui'`
+  - ✅ Complete TypeScript coverage:
+    - All runner methods have explicit type annotations
+    - Cucumber.js types integration (@cucumber/cucumber)
+    - Proper async/await typing throughout
+    - No implicit any types
+    - Generic types for configuration options
+  - ✅ Zero lint errors and warnings
+  - ✅ All imports used (no unused variables or imports)
+  - ✅ Follows established code patterns and conventions
+- **Validation Commands**:
+  ```bash
+  # Verify implementation file exists
+  ls packages/behavior-driven-ui/src/runners/cucumber.ts           # Should exist
+  ls packages/behavior-driven-ui/src/runners/index.ts             # Should exist
+
+  # Test TypeScript compilation
+  pnpm --filter behavior-driven-ui type:check                     # Should pass
+
+  # Test runner import and instantiation
+  echo "import { CucumberRunner, defineConfig } from 'behavior-driven-ui';" > test-runner.ts
+  echo "const config = defineConfig({ baseURL: 'http://localhost:3000', features: ['**/*.feature'], steps: ['**/*.steps.ts'] });" >> test-runner.ts
+  echo "const runner = new CucumberRunner(config);" >> test-runner.ts
+  pnpm --filter behavior-driven-ui exec tsc --noEmit test-runner.ts
+  rm test-runner.ts
+
+  # Test quality gates
+  pnpm --filter behavior-driven-ui lint                           # Should pass with 0 errors/warnings
+
+  # Test build includes runner
+  pnpm --filter behavior-driven-ui build                          # Should build successfully
+  node -e "const { CucumberRunner } = require('./packages/behavior-driven-ui/dist/index.js'); console.log(typeof CucumberRunner);"
+
+  # Create minimal test to verify runner functionality
+  mkdir -p test-runner-temp/features test-runner-temp/steps
+  echo 'Feature: Test\n  Scenario: Basic test\n    Given I have a test' > test-runner-temp/features/test.feature
+  echo 'import { Given } from "@cucumber/cucumber"; Given("I have a test", function() { console.log("Test step executed"); });' > test-runner-temp/steps/test.steps.ts
+
+  # Test runner can load features and steps (should not throw errors)
+  node -e "
+    const { CucumberRunner, defineConfig } = require('./packages/behavior-driven-ui/dist/index.js');
+    const config = defineConfig({
+      baseURL: 'http://localhost:3000',
+      features: ['test-runner-temp/features/**/*.feature'],
+      steps: ['test-runner-temp/steps/**/*.steps.ts']
+    });
+    try { new CucumberRunner(config); console.log('Runner created successfully'); } catch(e) { console.error('Error:', e.message); }
+  "
+  rm -rf test-runner-temp
+
+  # Verify no unused imports
+  pnpm --filter behavior-driven-ui exec npx unimported           # Should show no unused imports
+  ```
+- **Commit Message**: `feat: implement Cucumber.js runner with comprehensive World integration`
+
 ---
 
-## **PHASE 3: CLI & TOOLING** (4 Steps)
+## **PHASE 3: CLI & TOOLING** (6 Steps)
 
 ### **Step 17: Create CLI Package Implementation** - 🔴 NOT_STARTED
 - **Task**: CLI with commander.js, strict TypeScript, comprehensive help
@@ -842,17 +1031,17 @@
 
 ## 📊 **STATUS SUMMARY**
 
-**Total Steps**: 39 (Updated with Universal Path Resolution)
-- 🔴 **NOT_STARTED**: 26 steps
+**Total Steps**: 41 (Restored missing Steps 15-16)
+- 🔴 **NOT_STARTED**: 27 steps
 - 🟡 **IN_PROGRESS**: 0 steps
-- 🟢 **COMPLETE**: 13 steps (Phase 1 + Universal Path Resolution + Steps 9-12)
+- 🟢 **COMPLETE**: 14 steps (Phase 1 + Universal Path Resolution + Steps 9-13)
 - ⚪ **BLOCKED**: 0 steps
 - 🔄 **NEEDS_REVISION**: 0 steps
 
-**Current Phase**: Internal Module Structure (Phase 2) - 🟡 **IN PROGRESS (4/6 Steps)**
+**Current Phase**: Internal Module Structure (Phase 2) - 🟡 **IN PROGRESS (5/8 Steps)**
 **Next Phase**: CLI & Tooling (Phase 3)
-**Next Step**: Step 13 - Implement World Interface
-**Blockers**: None - Steps 11-12 completed successfully, ready for Step 13
+**Next Step**: Step 14 - Implement Playwright Driver Module
+**Blockers**: None - Step 13 completed successfully, ready for Step 14
 
 **Key Achievements**:
 - ✅ **Monorepo Foundation**: Complete with ultra-strict quality gates
