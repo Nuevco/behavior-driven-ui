@@ -53,19 +53,19 @@
    - Post-check: `turbo build`; `turbo test`; `git status`.
    - Tests to add: minimal passing Vitest smoke test (e.g., `expect(true).toBe(true)`) proving the runner works.
 
-2. 🟡 **Baseline CLI Entry Skeleton**
+2. 🟢 **Baseline CLI Entry Skeleton**
    - Pre-check guardrails.
    - Change: add minimal `src/cli/index.ts` plus placeholder types/options; include empty (skipped) CLI-related test file to be filled later.
    - Post-check guardrails.
    - Tests to add: CLI help test verifying default command prints usage (capture output via Vitest) and proves the runner can execute the TypeScript entry.
 
-3. 🔴 **Initial CLI Smoke Test**
+3. 🟢 **Initial CLI Smoke Test**
    - Pre-check guardrails.
    - Change: flesh out the placeholder test to verify the CLI entry loads without throwing (e.g., invoking `bdui --help`).
    - Post-check guardrails.
    - Tests to add: the smoke test itself executed via `pnpm --filter behavior-driven-ui run test`.
 
-4. 🔴 **Hook CLI into Build Outputs**
+4. 🟡 **Hook CLI into Build Outputs**
    - Pre-check guardrails.
    - Change: update `tsup.config.ts`, package `bin` field, and exports to emit compiled CLI artifacts.
    - Post-check guardrails.

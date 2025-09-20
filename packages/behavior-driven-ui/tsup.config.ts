@@ -5,6 +5,7 @@ export default defineConfig({
   entry: {
     index: 'src/index.ts',
     'cucumber/index': 'src/cucumber/index.ts',
+    cli: 'src/cli/bin.ts',
   },
 
   // Multiple output formats
