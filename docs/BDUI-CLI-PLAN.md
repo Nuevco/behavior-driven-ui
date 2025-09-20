@@ -47,7 +47,7 @@
 
 ## Implementation Plan
 
-1. 🔴 **Introduce Test Runner Dependencies**
+1. 🟡 **Introduce Test Runner Dependencies**
    - Pre-check: `git status`; `turbo build`; `turbo test`.
    - Change: add Vitest dependencies, workspace test scripts, and a Vitest config stub so the package can execute unit tests.
    - Post-check: `turbo build`; `turbo test`; `git status`.
@@ -124,4 +124,3 @@
     - Change: none—resolve TODOs, ensure clean git state, prep summary for review.
     - Post-check guardrails.
     - Tests to add: none (just verification).
-
