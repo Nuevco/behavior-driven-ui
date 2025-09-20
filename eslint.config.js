@@ -49,7 +49,11 @@ export default [
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        project: './tsconfig.json',
+        project: [
+          './tsconfig.json',
+          './packages/*/tsconfig.json',
+          './apps/*/tsconfig.json',
+        ],
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -57,12 +61,18 @@ export default [
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true,
-          project: './tsconfig.json',
+          project: [
+            './tsconfig.json',
+            './packages/*/tsconfig.json',
+            './apps/*/tsconfig.json',
+          ],
         },
         node: {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
         },
       },
+      'n/core-modules': ['behavior-driven-ui', '@nuevco/free-paths'],
+      'n/resolverExtensions': ['.js', '.jsx', '.ts', '.tsx'],
     },
     plugins: {
       '@typescript-eslint': typescriptEslint,
@@ -168,7 +178,12 @@ export default [
       // Node.js Best Practices
       'n/no-deprecated-api': 'error',
       'n/no-extraneous-import': 'error',
-      'n/no-missing-import': 'error',
+      'n/no-missing-import': [
+        'error',
+        {
+          allowModules: ['@nuevco/free-paths', 'behavior-driven-ui'],
+        },
+      ],
       'n/no-unpublished-import': 'error',
       'n/prefer-global/buffer': 'error',
       'n/prefer-global/console': 'error',

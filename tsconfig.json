@@ -36,7 +36,11 @@
     "paths": {
       "@/*": ["./src/*"],
       "@packages/*": ["./packages/*/src"],
-      "@apps/*": ["./apps/*/src"]
+      "@apps/*": ["./apps/*/src"],
+      "behavior-driven-ui": ["./packages/behavior-driven-ui/src/index.ts"],
+      "behavior-driven-ui/*": ["./packages/behavior-driven-ui/src/*"],
+      "@nuevco/free-paths": ["./packages/free-paths/src/index.ts"],
+      "@nuevco/free-paths/*": ["./packages/free-paths/src/*"]
     },
 
     /* Emit */
