@@ -1,54 +1,86 @@
 import { createHash } from 'node:crypto'
 import type { BinaryLike, BinaryToTextEncoding } from 'node:crypto'
+import { createRequire } from 'node:module'
 
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-type NodeCryptoWithHash = typeof globalThis.crypto & {
-  hash?: (
-    algorithm: string,
-    data: BinaryLike | ArrayBuffer | ArrayBufferView,
-    outputEncoding?: BinaryToTextEncoding,
-  ) => string | Buffer
+type HashLike = {
+  hash?: HashFunction
 }
 
-const maybeCrypto = globalThis.crypto as NodeCryptoWithHash | undefined
+type HashFunction = (
+  algorithm: string,
+  data: BinaryLike | ArrayBuffer | ArrayBufferView,
+  outputEncoding?: BinaryToTextEncoding,
+) => Buffer | string
 
-if (maybeCrypto && typeof maybeCrypto.hash !== 'function') {
-  const asBuffer = (data: BinaryLike | ArrayBuffer | ArrayBufferView): Buffer => {
-    if (typeof data === 'string') {
-      return Buffer.from(data)
-    }
+const require = createRequire(import.meta.url)
+const nodeCrypto = require('node:crypto') as HashLike & { webcrypto?: unknown }
 
-    if (Buffer.isBuffer(data)) {
-      return data
-    }
-
-    if (ArrayBuffer.isView(data)) {
-      return Buffer.from(data.buffer, data.byteOffset, data.byteLength)
-    }
-
-    if (data instanceof ArrayBuffer) {
-      return Buffer.from(data)
-    }
-
-    throw new TypeError('Unsupported data type for crypto.hash polyfill')
+const toBuffer = (data: BinaryLike | ArrayBuffer | ArrayBufferView): Buffer => {
+  if (typeof data === 'string') {
+    return Buffer.from(data)
   }
 
-  maybeCrypto.hash = (
-    algorithm: string,
-    data: BinaryLike | ArrayBuffer | ArrayBufferView,
-    outputEncoding?: BinaryToTextEncoding,
-  ) => {
-    const digest = createHash(algorithm).update(asBuffer(data))
-
-    if (outputEncoding) {
-      return digest.digest(outputEncoding)
-    }
-
-    return digest.digest('hex')
+  if (Buffer.isBuffer(data)) {
+    return data
   }
+
+  if (ArrayBuffer.isView(data)) {
+    return Buffer.from(data.buffer, data.byteOffset, data.byteLength)
+  }
+
+  if (data instanceof ArrayBuffer) {
+    return Buffer.from(data)
+  }
+
+  throw new TypeError('Unsupported data type for crypto.hash polyfill')
 }
+
+const ensureHash = (candidate: unknown): void => {
+  if (!candidate || typeof candidate !== 'object') {
+    return
+  }
+
+  const hashable = candidate as HashLike
+
+  if (typeof hashable.hash === 'function') {
+    return
+  }
+
+  Object.defineProperty(hashable, 'hash', {
+    configurable: true,
+    writable: true,
+    value: (
+      algorithm: string,
+      data: BinaryLike | ArrayBuffer | ArrayBufferView,
+      outputEncoding?: BinaryToTextEncoding,
+    ): Buffer | string => {
+      const digest = createHash(algorithm).update(toBuffer(data))
+
+      if (outputEncoding) {
+        return digest.digest(outputEncoding)
+      }
+
+      return digest.digest()
+    },
+  })
+}
+
+ensureHash(globalThis.crypto)
+
+if (!globalThis.crypto && nodeCrypto.webcrypto) {
+  Object.defineProperty(globalThis as typeof globalThis & { crypto?: unknown }, 'crypto', {
+    configurable: true,
+    writable: true,
+    value: nodeCrypto.webcrypto,
+  })
+}
+
+ensureHash(globalThis.crypto)
+ensureHash(nodeCrypto.webcrypto)
+ensureHash(nodeCrypto)
 
 // https://vite.dev/config/
 export default defineConfig({
