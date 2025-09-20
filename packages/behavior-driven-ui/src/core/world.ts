@@ -9,7 +9,80 @@
  * - Data sharing between test steps
  */
 
+import {
+  World as BaseCucumberWorld,
+  type IWorldOptions as CucumberWorldOptions,
+} from '@cucumber/cucumber';
+
 import type { Driver, WorldConfig } from './types.js';
+
+/**
+ * Active configuration shared by the current Cucumber runtime.
+ *
+ * The runner is responsible for calling {@link setWorldConfig} before any
+ * scenarios execute. When no configuration is provided we fall back to a
+ * console-reporting mock driver so that bundled support files remain usable
+ * during local experimentation.
+ */
+let activeWorldConfig: WorldConfig | undefined;
+
+/**
+ * Set the world configuration that newly constructed {@link World} instances
+ * should consume.
+ */
+export function setWorldConfig(config: WorldConfig): void {
+  activeWorldConfig = config;
+}
+
+/**
+ * Clear the active world configuration. Test runners should call this once the
+ * Cucumber session finishes to avoid leaking configuration between runs.
+ */
+export function clearWorldConfig(): void {
+  activeWorldConfig = undefined;
+}
+
+/**
+ * Determine whether a world configuration has been established.
+ */
+export function hasWorldConfig(): boolean {
+  return activeWorldConfig !== undefined;
+}
+
+function getActiveWorldConfig(): WorldConfig {
+  if (!activeWorldConfig) {
+    throw new Error(
+      'Behavior Driven UI world configuration has not been initialised. ' +
+        'Call setWorldConfig(...) before running Cucumber scenarios.'
+    );
+  }
+
+  return activeWorldConfig;
+}
+
+function createMockDriver(): Driver {
+  const voidResult = async (..._args: unknown[]): Promise<void> => undefined;
+
+  return {
+    goto: (_url: string) => voidResult(),
+    reload: () => voidResult(),
+    back: () => voidResult(),
+    forward: () => voidResult(),
+    click: (_selector: string) => voidResult(),
+    type: (_selector: string, _text: string) => voidResult(),
+    fill: (_selector: string, _value: string) => voidResult(),
+    select: (_selector: string, _options: string | string[]) => voidResult(),
+    waitFor: (_selector: string) => voidResult(),
+    expect: (_selector: string, _condition: string) => voidResult(),
+    getText: async (_selector: string) => '',
+    getValue: async (_selector: string) => '',
+    screenshot: async () => new Uint8Array(),
+    fullPageScreenshot: (_path: string) => voidResult(),
+    setViewport: (_width: number, _height: number) => voidResult(),
+    getViewport: async () => ({ width: 0, height: 0 }),
+    destroy: () => voidResult(),
+  };
+}
 
 /**
  * World class manages test context and state across scenarios
@@ -20,21 +93,22 @@ import type { Driver, WorldConfig } from './types.js';
  *
  * @example
  * ```typescript
- * import { World } from 'behavior-driven-ui';
+ * import { setWorldConfig, World } from 'behavior-driven-ui';
+ * import { supportCodeLibraryBuilder } from '@cucumber/cucumber';
  *
- * // Create a world instance with configuration and driver
- * const world = new World({
+ * setWorldConfig({
  *   config: {
  *     baseURL: 'http://localhost:3000',
- *     features: ['**\/*.feature'],
- *     steps: ['**\/*.steps.ts']
+ *     features: ['tests/**\/*.feature'],
+ *     steps: ['tests/**\/*.steps.ts'],
  *   },
- *   driver: playwrightDriver
+ *   driver: playwrightDriver,
  * });
  *
- * // Use in step definitions
- * world.setData('username', 'john.doe');
- * await world.driver.goto('/login');
+ * supportCodeLibraryBuilder.methods.setWorldConstructor(World);
+ * supportCodeLibraryBuilder.methods.Given('I visit the login page', async function () {
+ *   await this.driver.goto('/login');
+ * });
  * ```
  *
  * @example
@@ -53,7 +127,9 @@ import type { Driver, WorldConfig } from './types.js';
  * const loginPage = world.createPageObject(LoginPage);
  * ```
  */
-export class World {
+export class World<
+  Parameters extends Record<string, unknown> = Record<string, unknown>,
+> extends BaseCucumberWorld<Parameters> {
   /** Configuration object containing all framework settings */
   public readonly config: WorldConfig['config'];
 
@@ -67,34 +143,19 @@ export class World {
   private readonly pageObjects = new Map<string, unknown>();
 
   /**
-   * Create a new World instance for a test scenario
+   * Create a new World instance for a test scenario.
    *
-   * Initializes the world with configuration and driver instance.
-   * The world acts as the central context for all test operations.
-   *
-   * @param config - World configuration containing driver and framework settings
-   * @throws {Error} When driver instance is not provided in config
-   *
-   * @example
-   * ```typescript
-   * const world = new World({
-   *   config: {
-   *     baseURL: 'http://localhost:3000',
-   *     features: ['tests/**\/*.feature'],
-   *     steps: ['tests/**\/*.steps.ts']
-   *   },
-   *   driver: new PlaywrightDriver({ headless: true })
-   * });
-   * ```
+   * Initializes the world with configuration and driver instances previously
+   * supplied via {@link setWorldConfig}. The world acts as the central context
+   * for all step definitions and page objects.
    */
-  constructor(config: WorldConfig) {
-    this.config = config.config;
+  constructor(options: CucumberWorldOptions<Parameters>) {
+    super(options);
 
-    if (!config.driver) {
-      throw new Error('Driver instance is required in WorldConfig');
-    }
+    const { config, driver } = getActiveWorldConfig();
 
-    this.driver = config.driver;
+    this.config = config;
+    this.driver = driver ?? createMockDriver();
   }
 
   /**

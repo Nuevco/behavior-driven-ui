@@ -3,36 +3,24 @@
  * This avoids the dual instance problem by importing from user's installation
  */
 
-import type { World } from '../core/world.js';
+import { hasWorldConfig, setWorldConfig } from '../core/world.js';
+import { registerBehaviorDrivenUISupport } from '../cucumber/register.js';
 
 export async function registerSteps(): Promise<void> {
   try {
-    // Use dynamic import instead of require to avoid ES module issues
-    const cucumberModule = await import('@cucumber/cucumber');
-    const { Given, When, Then } = cucumberModule;
+    const { supportCodeLibraryBuilder } = await import('@cucumber/cucumber');
 
-    Given('I have a test world', function (this: World) {
-      // Basic world validation step
-    });
+    if (!hasWorldConfig()) {
+      setWorldConfig({
+        config: {
+          baseURL: '',
+          features: [],
+          steps: [],
+        },
+      });
+    }
 
-    When(
-      'I store {string} as {string}',
-      function (this: World, key: string, value: string) {
-        this.setData(key, value);
-      }
-    );
-
-    Then(
-      'I should be able to retrieve {string} as {string}',
-      function (this: World, key: string, expectedValue: string) {
-        const actualValue = this.getData<string>(key);
-        if (actualValue !== expectedValue) {
-          throw new Error(
-            `Expected ${key} to be ${expectedValue}, but got ${actualValue}`
-          );
-        }
-      }
-    );
+    registerBehaviorDrivenUISupport(supportCodeLibraryBuilder.methods);
   } catch (error) {
     throw new Error(
       `Failed to import @cucumber/cucumber: ${

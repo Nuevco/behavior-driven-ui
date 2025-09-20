@@ -39,6 +39,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@cucumber/messages": "^28.1.0",
     "@playwright/test": "^1.40.0",
     "commander": "^11.0.0",
     "zod": "^3.22.0"
