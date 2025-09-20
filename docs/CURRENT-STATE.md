@@ -1,262 +1,60 @@
-# CURRENT PROJECT STATE - September 14, 2024
+# CURRENT PROJECT STATE – March 2025 Update
 
-## 🎯 **PROJECT OVERVIEW**
+Repository: `behavior-driven-ui`
+Goal: Enterprise-grade BDD UI testing framework with cross-framework validation
 
-**Repository**: `behavior-driven-ui` - Behavior-Driven UI Testing Monorepo
-**Vision**: Enterprise-grade behavior-driven UI testing framework with cross-framework validation
-**Current Phase**: Foundation Setup + Universal Path Resolution (Extended Phase 1)
-**Quality Status**: ✅ **EXCELLENT** - All quality gates enforced and passing
+## 🎯 Executive Summary
+- Foundation (Phase 1) remains complete: monorepo, turbo pipeline, strict lint/TS gates, universal path utilities.
+- Phase 2 has progressed well beyond Step 9: the cucumber runner, mock driver, core step library, and world/config abstractions are live and exercised by the new `react-sample` app.
+- Additional packages (`behavior-driven-ui-jest`, `behavior-driven-ui-webdriver`) are scaffolded; APIs still need fleshing out.
+- Shared top-level `/features` directory is still a placeholder—React sample currently hosts the only feature files.
+- Immediate focus shifts to stabilising adapters, expanding shared features, and bringing additional framework apps online.
 
----
+## 📦 Workspace Snapshot
+| Package / App | Status | Notes |
+|---------------|--------|-------|
+| `packages/behavior-driven-ui` | 🟢 Core + cucumber modules shipping dual ESM/CJS builds | `runBduiFeatures` orchestrates cucumber-js with mock driver + step library |
+| `packages/behavior-driven-ui-jest` | 🟡 Scaffolded | Needs API finalized & tests wired to core runner |
+| `packages/behavior-driven-ui-webdriver` | 🟡 Scaffolded | Placeholder WebDriver driver exported; integration TBD |
+| `packages/free-paths` | 🟢 Stable | Universal path helpers consumed across workspaces |
+| `apps/cjs-app`, `apps/esm-app` | 🟢 Passing | Validate `@nuevco/free-paths` in CJS/ESM |
+| `apps/react-sample` | 🟢 Passing (outside Seatbelt) | Runs three sample features via `runBduiFeatures`; generates reports |
 
-## 📊 **IMPLEMENTATION STATUS**
+## 🧱 Architecture & Modules
+- **Core module** (`src/core`)
+  - `defineConfig`, `BehaviorDrivenUIConfig`, `World`, `BaseDriver`, error types
+- **Cucumber module** (`src/cucumber`)
+  - `runBduiFeatures` runner, support builder resolution, mock driver, core step library (world lifecycle, data steps, viewport, navigation)
+  - Builds now emit direct exports (no chunk indirection) to support Node 20.9 environments
+- **Integration adapters**
+  - Jest + WebDriver packages exist but require implementation of test runners/adapters
+- **Sample React app**
+  - Consumes built package via workspace dependency
+  - Houses sample features: viewport resizing, world data reset, initial navigation
+  - Uses namespace import fallback so Node 20.9+ reliably resolves `runBduiFeatures`
 
-### **PHASE 1: FOUNDATION SETUP** - 🟢 **COMPLETE** (8/8 Steps)
+## ✅ Quality & Tooling
+- Lint (`pnpm lint`) and TS checks (`pnpm type:check`) still build-blocking via turbo pipeline
+- Dual-module builds succeed: `pnpm build` (turbo) runs all package/app builds in ~11s cached<br>Seatbelt prevents `pnpm --filter react-sample test` from finishing inside the sandbox; command works locally
+- Added helper `run-react-sample.js` script to execute features without relying on `tsx`
 
-✅ **Step 1: Initialize Monorepo Structure** - COMPLETE
-✅ **Step 2: Install Core Monorepo Dependencies** - COMPLETE
-✅ **Step 3: Setup Strict Linting & TypeScript Configuration** - COMPLETE
-✅ **Step 4: Create Turbo Pipeline Configuration** - COMPLETE
-✅ **Step 5: Create Core Directory Structure** - COMPLETE
-✅ **Step 6: Initialize Main Package (behavior-driven-ui)** - COMPLETE
-✅ **Step 6.1: Root Package Script Optimization** - COMPLETE
-✅ **Step 7: Setup Main Package Build System** - COMPLETE
+## 📉 Gaps vs Documentation
+- Prior docs assumed only `core/` existed inside `behavior-driven-ui`; now `cucumber/` is equally important and must be documented (done in OVERVIEW refresh).
+- Plan/status trackers lagged: Phase 2 steps beyond Step 9 were marked undone despite real code. Tables have been corrected in `OVERALL-PLAN.md`.
+- React sample app, Jest/WebDriver packages, and the new fallback import logic were missing from previous narratives—now captured in this update.
 
-### **PHASE 2: INTERNAL MODULE STRUCTURE** - 🟡 **IN PROGRESS** (1/6 Steps)
+## 🔜 Near-Term Focus (Next 2–3 sprints)
+1. Flesh out **adapter packages**:
+   - Implement Jest runner glue (`behavior-driven-ui-jest`)
+   - Implement real WebDriver bindings (`behavior-driven-ui-webdriver`)
+2. **Shared feature corpus** under `/features/ui` and refactor React sample to consume it (instead of local copies)
+3. Scaffold additional apps (`next-app`, `qwik-app`) mirroring React sample scenarios
+4. Extend step libraries (forms, network stubbing, accessibility assertions)
+5. Establish tarball packaging + CI flows once adapters stabilise
 
-✅ **Step 9: Create Internal Module Structure** - COMPLETE
+## 📌 Risks & Watch Items
+- Cucumber runner currently relies on `@cucumber/cucumber` internals via dynamic import; keep tests around `loadSupportBuilder` as versions change
+- Seatbelt constraints mean local developer testing must use raw `node` or external shells; we should document this in contributor docs
+- Additional framework apps will drive the need for real Playwright driver integration rather than the mock driver presently in use
 
-### **BONUS: UNIVERSAL PATH RESOLUTION SYSTEM** - 🟢 **COMPLETE**
-
-✅ **@nuevco/free-paths Package** - Universal path resolution library
-✅ **ESM Test Application** - Validates ESM compatibility
-✅ **CJS Test Application** - Validates CommonJS compatibility
-✅ **Cross-Module System Validation** - Proves universal compatibility
-
----
-
-## 🏗️ **CURRENT ARCHITECTURE**
-
-### **Monorepo Structure**
-```
-behavior-driven-ui/
-├── package.json                    # Root workspace configuration
-├── pnpm-workspace.yaml            # PNPM workspace definition
-├── turbo.json                     # Turbo build pipeline
-├── eslint.config.js               # Ultra-strict ESLint (80+ rules)
-├── tsconfig.json                  # Strict TypeScript configuration
-├── .prettierrc                    # Code formatting standards
-├── .gitignore                     # Git ignore patterns (includes .turbo)
-│
-├── packages/
-│   ├── behavior-driven-ui/        # Main framework package
-│   │   ├── src/
-│   │   │   ├── index.ts           # Main package exports
-│   │   │   └── core/              # Core module (IMPLEMENTED)
-│   │   │       ├── index.ts       # Core exports
-│   │   │       ├── types.ts       # TypeScript interfaces
-│   │   │       ├── config.ts      # defineConfig function
-│   │   │       ├── world.ts       # World class
-│   │   │       └── driver.ts      # BaseDriver and error classes
-│   │   ├── tsup.config.ts         # Build configuration (ESM + CJS)
-│   │   └── package.json           # Package metadata and dependencies
-│   │
-│   └── free-paths/                # Universal path resolution library
-│       ├── src/index.ts           # Universal path utilities
-│       ├── tsup.config.ts         # Dual module build configuration
-│       └── package.json           # @nuevco/free-paths package
-│
-├── apps/
-│   ├── cjs-app/                   # CommonJS validation app
-│   │   ├── src/
-│   │   │   ├── index.ts           # CJS syntax (require/module.exports)
-│   │   │   └── tester.ts          # PathTester with require() imports
-│   │   ├── eslint.config.mjs      # CJS-specific ESLint overrides
-│   │   ├── jest.config.js         # Jest configuration
-│   │   └── index.test.js          # Test suite (4 tests)
-│   │
-│   └── esm-app/                   # ESM validation app
-│       ├── src/
-│       │   ├── index.ts           # ESM syntax (import/export)
-│       │   └── tester.ts          # PathTester with import statements
-│       ├── eslint.config.mjs      # ESM-specific ESLint configuration
-│       ├── jest.config.js         # Jest configuration
-│       └── index.test.js          # Test suite (4 tests)
-│
-├── features/                      # Shared Gherkin features
-│   ├── common/                    # Common step definitions
-│   └── ui/                        # UI feature files
-│
-└── docs/                          # Project documentation
-    ├── CURRENT-STATE.md           # This file - current project status
-    ├── GUARDRAILS.md              # Development workflow and quality rules
-    ├── OVERVIEW.md                # Technical architecture and requirements
-    └── OVERALL-PLAN.md            # Complete implementation roadmap
-```
-
----
-
-## 🔧 **TECHNICAL IMPLEMENTATION DETAILS**
-
-### **Build System**
-- **Package Manager**: PNPM v9+ with workspace protocol
-- **Build Tool**: Turbo 2.5.6 with intelligent caching
-- **Bundler**: tsup for ESM + CJS dual output
-- **Performance**: 11.2s full build time (7/10 cached tasks)
-- **Main Package Build**: 98ms ESM + 96ms CJS + 1067ms TypeScript declarations
-
-### **Quality Enforcement**
-- **ESLint**: 80+ enterprise-grade rules, zero warnings allowed
-- **TypeScript**: Strict mode with all safety options enabled
-- **Build Integration**: Lint and type-check are build-blocking
-- **Coverage**: 100% of codebase under quality gates
-
-### **Universal Path Resolution**
-- **Package**: `@nuevco/free-paths` - Zero-dependency path utilities
-- **Compatibility**: Works identically in ESM and CommonJS environments
-- **Implementation**: Uses `callsites` v3.1.0 and `pkg-dir` v5.0.0
-- **Validation**: Comprehensive test suites in both module systems
-
----
-
-## 📈 **QUALITY METRICS**
-
-### **Build Performance**
-```
-✅ Full Build Time: 11.2s (10 tasks total)
-✅ Lint Execution: Zero errors across all packages
-✅ Test Execution: 8/8 tests passing (100%)
-✅ Cache Hit Rate: 70% (7/10 cached tasks)
-✅ Main Package: ESM + CJS + TypeScript declarations generated
-```
-
-### **Code Quality**
-```
-✅ ESLint Errors: 0 across all packages
-✅ TypeScript Errors: 0 across all packages
-✅ Test Coverage: 8/8 tests passing (100%)
-✅ Build Failures: 0 current issues
-```
-
-### **Package Health**
-```
-✅ Dependencies: All up-to-date and secure
-✅ Workspace Links: All functional
-✅ Module Resolution: Perfect cross-system compatibility
-✅ Type Safety: Full TypeScript coverage
-```
-
----
-
-## 🎯 **KEY ACHIEVEMENTS**
-
-### **1. Ultra-Strict Quality Gates**
-- **80+ ESLint rules** enforced across entire monorepo
-- **Build-blocking quality checks** - no code ships with violations
-- **Strict TypeScript mode** with all safety options enabled
-- **Zero tolerance policy** for quality violations
-
-### **2. Universal Path Resolution**
-- **@nuevco/free-paths** provides `__dirname` and `__filename` equivalents
-- **Works identically** in both ESM and CommonJS environments
-- **Zero conditional logic** - uses universal `callsites` approach
-- **Comprehensive validation** with dedicated test applications
-
-### **3. Optimal Developer Experience**
-- **PNPM workspaces** with workspace protocol for local development
-- **Turbo caching** for 2.8-4.4x speed improvements
-- **Smart shortcuts** - `pnpm bdui:build`, `pnpm free-paths:build`, etc.
-- **Consistent tooling** across all packages and applications
-
-### **4. Production-Ready Architecture**
-- **Dual ESM/CJS output** for maximum compatibility
-- **Tree-shakeable builds** with proper module boundaries
-- **Type declaration files** for full TypeScript support
-- **Workspace dependency management** with version consistency
-
-### **5. Internal Module Structure**
-- **Core Module Architecture** with consistent structure
-- **TypeScript Interfaces** (`BehaviorDrivenUIConfig`, `Driver`, `WorldConfig`)
-- **Configuration System** with `defineConfig` function and validation
-- **Abstract Driver Classes** with proper error handling
-- **World Class** for test context and state management
-
----
-
-## 🔄 **CURRENT DEVELOPMENT STATE**
-
-### **What Works Perfectly**
-✅ **Monorepo Setup**: PNPM workspaces with Turbo pipeline
-✅ **Quality Gates**: Ultra-strict ESLint and TypeScript enforcement
-✅ **Build System**: Fast, cached builds with dual ESM/CJS output
-✅ **Universal Paths**: Cross-module-system path resolution
-✅ **Test Validation**: Both ESM and CJS apps validate the path library
-✅ **Developer Tools**: Optimized scripts and shortcuts
-✅ **Core Module Structure**: Complete internal architecture with types
-✅ **Configuration System**: Fully typed `defineConfig` with validation
-✅ **Error Handling**: Proper driver error classes and inheritance
-
-### **Architecture Decisions Made**
-- **Single Main Package**: Consolidated vs. multiple packages for simplicity
-- **Internal Modules**: Well-organized internal structure within main package
-- **Universal Compatibility**: Proven approach for ESM/CJS dual support
-- **Quality-First**: Build-blocking quality gates established
-
-### **Ready for Next Phase**
-The foundation is rock-solid. All systems are tested, validated, and ready for the next development phase. The universal path resolution system demonstrates our ability to create high-quality, cross-compatible packages.
-
----
-
-## 🚦 **NEXT STEPS PREPARATION**
-
-### **Phase 2: Internal Module Structure** (1/6 Steps Complete)
-- ✅ Core system implementation with configuration management (Step 9)
-- 🔴 Driver interface design and Playwright implementation (Step 10-14)
-- 🔴 Runner system with Cucumber.js integration (Step 15-16)
-- 🔴 Preset step definitions for common UI operations (Step 15)
-- 🔴 CLI tool development with Commander.js (Step 17-18)
-
-### **Development Readiness**
-- ✅ **Quality Infrastructure**: All quality gates in place and tested
-- ✅ **Build Pipeline**: Proven fast and reliable build system
-- ✅ **Module Architecture**: Clear internal organization established
-- ✅ **Cross-Compatibility**: Universal compatibility patterns proven
-- ✅ **Developer Experience**: Optimized tooling and scripts ready
-
----
-
-## 💡 **TECHNICAL INSIGHTS**
-
-### **Key Technical Learnings**
-1. **ESLint Configuration**: CJS apps need specific rule overrides for `require()` usage
-2. **Universal Paths**: `callsites` + `pkg-dir` combination works perfectly across module systems
-3. **Build Performance**: Turbo caching provides massive speed improvements
-4. **Quality Gates**: Build-blocking lint checks catch real issues during development
-
-### **Architecture Patterns Established**
-1. **Workspace Protocol**: Use `workspace:^` for local package dependencies
-2. **Dual Builds**: ESM + CJS output for maximum compatibility
-3. **Quality Integration**: Lint and type-check as build dependencies
-4. **Modular Structure**: Clear separation of concerns within packages
-
----
-
-## 🔍 **PROJECT HEALTH INDICATORS**
-
-### **🟢 GREEN (Excellent)**
-- Build system performance and reliability
-- Code quality enforcement and standards
-- Universal compatibility implementation
-- Developer experience and tooling
-
-### **🟡 YELLOW (Monitoring)**
-- None currently - all systems healthy
-
-### **🔴 RED (Action Required)**
-- None currently - all issues resolved
-
----
-
-**STATUS**: ✅ **STEP 9 COMPLETE - INTERNAL MODULE STRUCTURE CREATED**
-
-*Phase 1 foundation is complete and Step 9 of Phase 2 is finished. Core module structure is implemented with full TypeScript coverage, quality gates passing, and build system functional. Ready for Step 10: Setup Internal Module Dependencies.*
+Stay aligned with `docs/GUARDRAILS.md`: planning mode by default, request implementation authorization before altering source outside the docs suite.
