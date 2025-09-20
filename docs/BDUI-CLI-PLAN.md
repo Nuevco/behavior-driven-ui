@@ -47,17 +47,17 @@
 
 ## Implementation Plan
 
-1. 🟡 **Introduce Test Runner Dependencies**
+1. 🟢 **Introduce Test Runner Dependencies**
    - Pre-check: `git status`; `turbo build`; `turbo test`.
    - Change: add Vitest dependencies, workspace test scripts, and a Vitest config stub so the package can execute unit tests.
    - Post-check: `turbo build`; `turbo test`; `git status`.
    - Tests to add: minimal passing Vitest smoke test (e.g., `expect(true).toBe(true)`) proving the runner works.
 
-2. 🔴 **Baseline CLI Entry Skeleton**
+2. 🟡 **Baseline CLI Entry Skeleton**
    - Pre-check guardrails.
    - Change: add minimal `src/cli/index.ts` plus placeholder types/options; include empty (skipped) CLI-related test file to be filled later.
    - Post-check guardrails.
-   - Tests to add: none yet (placeholder remains skipped until actual behavior exists).
+   - Tests to add: CLI help test verifying default command prints usage (capture output via Vitest) and proves the runner can execute the TypeScript entry.
 
 3. 🔴 **Initial CLI Smoke Test**
    - Pre-check guardrails.
