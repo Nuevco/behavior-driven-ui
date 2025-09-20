@@ -12,7 +12,7 @@
 4. **Centralized runtime orchestration**: Logic currently in `apps/react-sample/cucumber.ts` migrates into the CLI.
 5. **Extensible steps**: Users may add step files by convention (e.g., `bdui/steps/**/*.{ts,js}`) or by providing globs in config.
 6. **Protected cucumber options**: Users may supply overrides, but CLI validates/filters them to avoid conflicts with BDUI requirements.
-7. **Project scaffolding**: `bdui init` creates baseline directories, config, and scripts (“schafoled”) to prepare a project.
+7. **Project scaffolding**: `bdui init` creates baseline directories, config, and scripts idempotently (“schafoled”) to prep projects.
 
 ## Implementation Outline
 - **CLI Structure**
@@ -38,9 +38,90 @@
   - Add docs covering CLI usage, init workflow, configuration reference, migration notes.
   - Add unit/integration tests verifying CLI commands, config merging, and step discovery.
 
-## Next Steps (once in implementation mode)
-1. Implement CLI source files and tsup build wiring.
-2. Create configuration loader and validation utilities.
-3. Update `react-sample` to rely solely on the new CLI.
-4. Add automated tests for CLI behavior.
-5. Refresh documentation and sample instructions.
+## Execution Rules
+- **Status icons**: 🔴 Not started · 🟡 In progress · 🟢 Done
+- At any time, **only one step may be marked 🟡**. When we start a step, mark it 🟡 and keep all others at 🟢 (if already approved) or 🔴.
+- A step may be marked 🟢 only after explicit user approval.
+- Every step must begin with validation commands (`git status`, `turbo build`, `turbo test`) and end with (`turbo build`, `turbo test`, `git status`).
+- Each step’s change must remain small and individually reviewable; tests are added as soon as a step can be tested.
+
+## Implementation Plan
+
+1. 🔴 **Introduce Test Runner Dependencies**
+   - Pre-check: `git status`; `turbo build`; `turbo test`.
+   - Change: add Vitest dependencies, workspace test scripts, and a Vitest config stub so the package can execute unit tests.
+   - Post-check: `turbo build`; `turbo test`; `git status`.
+   - Tests to add: minimal passing Vitest smoke test (e.g., `expect(true).toBe(true)`) proving the runner works.
+
+2. 🔴 **Baseline CLI Entry Skeleton**
+   - Pre-check guardrails.
+   - Change: add minimal `src/cli/index.ts` plus placeholder types/options; include empty (skipped) CLI-related test file to be filled later.
+   - Post-check guardrails.
+   - Tests to add: none yet (placeholder remains skipped until actual behavior exists).
+
+3. 🔴 **Initial CLI Smoke Test**
+   - Pre-check guardrails.
+   - Change: flesh out the placeholder test to verify the CLI entry loads without throwing (e.g., invoking `bdui --help`).
+   - Post-check guardrails.
+   - Tests to add: the smoke test itself executed via `pnpm --filter behavior-driven-ui run test`.
+
+4. 🔴 **Hook CLI into Build Outputs**
+   - Pre-check guardrails.
+   - Change: update `tsup.config.ts`, package `bin` field, and exports to emit compiled CLI artifacts.
+   - Post-check guardrails.
+   - Tests to add: extend Vitest coverage to assert tsup config contains the CLI entry or run a bundling smoke test if feasible.
+
+5. 🔴 **Configuration Loader & Validation**
+   - Pre-check guardrails.
+   - Change: implement config discovery (`bdui.config.*`) with zod validation and defaults.
+   - Post-check guardrails.
+   - Tests to add: unit tests covering valid config, missing config fallback, and schema validation errors.
+
+6. 🔴 **Step Discovery Utilities**
+   - Pre-check guardrails.
+   - Change: implement functions to resolve step files via conventions/globs without executing them.
+   - Post-check guardrails.
+   - Tests to add: unit tests using temp directories verifying glob behavior and deduplication.
+
+7. 🔴 **TypeScript/ESM Loader Registration**
+   - Pre-check guardrails.
+   - Change: add module that registers `tsx` (or similar) once before loading user steps to support TS/ESM files.
+   - Post-check guardrails.
+   - Tests to add: unit test to ensure loader runs once; integration test proving a TS step file can be imported.
+
+8. 🔴 **Implement `bdui run` Command**
+   - Pre-check guardrails.
+   - Change: wire CLI run command to load config, register core steps, load user steps, sanitize cucumber options, and invoke `runBduiFeatures`.
+   - Post-check guardrails.
+   - Tests to add: Vitest suite mocking `runBduiFeatures` verifying option merging, enforced defaults, and failure handling.
+
+9. 🔴 **Implement `bdui init` Command**
+   - Pre-check guardrails.
+   - Change: add scaffolding command creating config/feature/step directories idempotently.
+   - Post-check guardrails.
+   - Tests to add: integration test running CLI in a temp directory verifying created files and safe re-runs.
+
+10. 🔴 **Update `react-sample` to Use CLI**
+    - Pre-check guardrails.
+    - Change: remove `cucumber.ts`, update scripts to call `bdui run`, and include CLI-generated scaffolding artifacts if applicable.
+    - Post-check guardrails.
+    - Tests to add: ensure existing cucumber scenarios run via CLI by executing `pnpm --filter react-sample run test` in an integration test.
+
+11. 🔴 **Repository-Level Integration Smoke Test**
+    - Pre-check guardrails.
+    - Change: add automated smoke test (in `apps/react-sample` or new fixture) invoking compiled `bdui run` end-to-end.
+    - Post-check guardrails.
+    - Tests to add: the smoke test wired into turbo `test` pipeline.
+
+12. 🔴 **Documentation Refresh**
+    - Pre-check guardrails.
+    - Change: update docs/README to explain new CLI, config, and migration path.
+    - Post-check guardrails.
+    - Tests to add: none (documentation change only; rely on lint if available).
+
+13. 🔴 **Final Verification & Cleanup**
+    - Pre-check guardrails.
+    - Change: none—resolve TODOs, ensure clean git state, prep summary for review.
+    - Post-check guardrails.
+    - Tests to add: none (just verification).
+
