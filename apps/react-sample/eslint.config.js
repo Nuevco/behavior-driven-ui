@@ -1,5 +1,55 @@
 import js from '@eslint/js'
-import globals from 'globals'
+
+const browserGlobals = Object.fromEntries(
+  [
+    'AbortController',
+    'addEventListener',
+    'alert',
+    'atob',
+    'Blob',
+    'btoa',
+    'BroadcastChannel',
+    'cancelAnimationFrame',
+    'clearInterval',
+    'clearTimeout',
+    'confirm',
+    'console',
+    'CustomEvent',
+    'document',
+    'Element',
+    'Event',
+    'EventTarget',
+    'fetch',
+    'File',
+    'FileList',
+    'FormData',
+    'Headers',
+    'history',
+    'IntersectionObserver',
+    'localStorage',
+    'location',
+    'matchMedia',
+    'MessageChannel',
+    'MessagePort',
+    'MutationObserver',
+    'navigator',
+    'Notification',
+    'performance',
+    'prompt',
+    'queueMicrotask',
+    'removeEventListener',
+    'requestAnimationFrame',
+    'Response',
+    'sessionStorage',
+    'setInterval',
+    'setTimeout',
+    'URL',
+    'URLSearchParams',
+    'WebSocket',
+    'window',
+    'Worker',
+  ].map((name) => [name, 'readonly']),
+)
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
@@ -17,7 +67,7 @@ export default tseslint.config([
     ],
     languageOptions: {
       ecmaVersion: 2020,
-      globals: globals.browser,
+      globals: browserGlobals,
     },
   },
 ])
