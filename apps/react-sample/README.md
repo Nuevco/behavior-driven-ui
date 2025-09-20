@@ -1,69 +1,20 @@
-# React + TypeScript + Vite
+# React Sample
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This sample React application demonstrates a minimal Vite + React setup that
+builds successfully on Node.js 20.9 and newer. It intentionally stays on Vite 5
+so that asset hashing relies on the classic `createHash` helper provided by all
+supported Node 20 releases.
 
-Currently, two official plugins are available:
+## Available scripts
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- `pnpm --filter react-sample dev` – start the Vite dev server.
+- `pnpm --filter react-sample build` – type-check and create a production build.
+- `pnpm --filter react-sample preview` – preview the production build locally.
+- `pnpm --filter react-sample lint` – run ESLint on the source directory.
+- `pnpm --filter react-sample type:check` – run TypeScript without emitting files.
 
-## Expanding the ESLint configuration
+## Node.js compatibility
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Vite 5 supports Node.js 18 and 20 without requiring the newer
+`crypto.hash` helper that ships in Node 20.19+. If you plan to upgrade Vite,
+update your Node.js runtime to 20.19+ or 22.12+ first to avoid build failures.

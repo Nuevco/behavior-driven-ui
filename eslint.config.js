@@ -56,6 +56,12 @@ export default [
         ],
         tsconfigRootDir: import.meta.dirname,
       },
+      globals: {
+        document: 'readonly',
+        window: 'readonly',
+        navigator: 'readonly',
+        JSX: 'readonly',
+      },
     },
     settings: {
       'import/resolver': {

@@ -2,14 +2,7 @@
  * Base driver interface and utilities
  */
 
-import type {
-  AssertionCondition,
-  Driver,
-  ScreenshotOptions,
-  Selector,
-  ViewportSize,
-  WaitOptions,
-} from './types.js';
+import type { Driver } from './types.js';
 
 /**
  * Abstract base class for driver implementations
@@ -37,24 +30,24 @@ export abstract class BaseDriver implements Driver {
   abstract reload(): Promise<void>;
   abstract back(): Promise<void>;
   abstract forward(): Promise<void>;
-  abstract click(selector: Selector): Promise<void>;
-  abstract type(selector: Selector, text: string): Promise<void>;
-  abstract fill(selector: Selector, value: string): Promise<void>;
-  abstract select(
-    selector: Selector,
-    options: string | string[]
+  abstract click(selector: string): Promise<void>;
+  abstract type(selector: string, text: string): Promise<void>;
+  abstract fill(selector: string, value: string): Promise<void>;
+  abstract select(selector: string, options: string | string[]): Promise<void>;
+  abstract waitFor(
+    selector: string,
+    options?: { timeout?: number }
   ): Promise<void>;
-  abstract waitFor(selector: Selector, options?: WaitOptions): Promise<void>;
-  abstract expect(
-    selector: Selector,
-    condition: AssertionCondition
-  ): Promise<void>;
-  abstract getText(selector: Selector): Promise<string>;
-  abstract getValue(selector: Selector): Promise<string>;
-  abstract screenshot(options?: ScreenshotOptions): Promise<Uint8Array>;
+  abstract expect(selector: string, condition: string): Promise<void>;
+  abstract getText(selector: string): Promise<string>;
+  abstract getValue(selector: string): Promise<string>;
+  abstract screenshot(options?: {
+    path?: string;
+    fullPage?: boolean;
+  }): Promise<Uint8Array>;
   abstract fullPageScreenshot(path: string): Promise<void>;
   abstract setViewport(width: number, height: number): Promise<void>;
-  abstract getViewport(): Promise<ViewportSize>;
+  abstract getViewport(): Promise<{ width: number; height: number }>;
 
   /**
    * Destroy the driver and cleanup resources
