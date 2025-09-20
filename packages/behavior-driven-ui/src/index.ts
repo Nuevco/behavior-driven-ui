@@ -7,3 +7,6 @@
 
 // Core exports
 export * from './core/index.js';
+
+// Cucumber integration utilities
+export * from './cucumber/index.js';
