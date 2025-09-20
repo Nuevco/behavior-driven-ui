@@ -1,8 +1,11 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  // Entry point - main package exports
-  entry: ['src/index.ts'],
+  // Build both the root entry and the cucumber subpath so exported files exist on disk
+  entry: {
+    index: 'src/index.ts',
+    'cucumber/index': 'src/cucumber/index.ts',
+  },
 
   // Multiple output formats
   format: ['esm', 'cjs'],
@@ -16,8 +19,8 @@ export default defineConfig({
   // Clean dist directory before build
   clean: true,
 
-  // Split chunks for better tree-shaking
-  splitting: true,
+  // Avoid chunk-splitting so Node 20.x ESM loader sees named exports reliably
+  splitting: false,
 
   // Source maps for debugging
   sourcemap: true,

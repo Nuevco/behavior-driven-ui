@@ -77,10 +77,22 @@ function resolveBuilderModulePath(
 async function loadSupportBuilder(
   modulePath: string
 ): Promise<SupportCodeLibraryBuilder> {
-  const module = (await import(
-    pathToFileURL(modulePath).href
-  )) as SupportCodeLibraryBuilderModule;
-  return module.default;
+  const module = (await import(pathToFileURL(modulePath).href)) as
+    | SupportCodeLibraryBuilderModule
+    | { default: SupportCodeLibraryBuilderModule };
+
+  const candidate = 'default' in module ? module.default : module;
+  if ('reset' in candidate) {
+    return candidate;
+  }
+
+  const nestedDefault = (candidate as { default?: SupportCodeLibraryBuilder })
+    .default;
+  if (nestedDefault && 'reset' in nestedDefault) {
+    return nestedDefault;
+  }
+
+  throw new Error('Unable to load Cucumber support library builder module.');
 }
 
 function normalizeSupportCoordinates(
