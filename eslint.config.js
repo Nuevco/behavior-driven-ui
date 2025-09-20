@@ -51,6 +51,7 @@ export default [
         sourceType: 'module',
         project: [
           './tsconfig.json',
+          './packages/*/tsconfig.eslint.json',
           './packages/*/tsconfig.json',
           './apps/*/tsconfig.json',
         ],
@@ -69,6 +70,7 @@ export default [
           alwaysTryTypes: true,
           project: [
             './tsconfig.json',
+            './packages/*/tsconfig.eslint.json',
             './packages/*/tsconfig.json',
             './apps/*/tsconfig.json',
           ],

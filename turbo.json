@@ -28,11 +28,13 @@
       "inputs": [
         "$TURBO_DEFAULT$",
         "eslint.config.js",
-        ".prettierrc",
+        "**/*.mjs",
+        "**/*.cjs",
         "**/*.ts",
         "**/*.tsx",
         "**/*.js",
-        "**/*.jsx"
+        "**/*.jsx",
+        "**/*.json"
       ],
       "outputs": []
     },
@@ -40,11 +42,13 @@
       "inputs": [
         "$TURBO_DEFAULT$",
         "eslint.config.js",
-        ".prettierrc",
+        "**/*.mjs",
+        "**/*.cjs",
         "**/*.ts",
         "**/*.tsx",
         "**/*.js",
-        "**/*.jsx"
+        "**/*.jsx",
+        "**/*.json"
       ],
       "outputs": [],
       "cache": false
