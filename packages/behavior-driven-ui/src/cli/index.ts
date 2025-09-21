@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 
 import { Command } from 'commander';
 
+import { registerInitCommand } from './init/command.js';
 import { registerRunCommand } from './run/command.js';
 
 export {
@@ -10,6 +11,8 @@ export {
   resolveStepFilesFromConfig,
 } from './steps/resolve-step-files.js';
 export { ensureLoadersRegistered } from './runtime/register-loaders.js';
+export { executeInit } from './init/execute-init.js';
+export { registerInitCommand } from './init/command.js';
 export { executeRun } from './run/execute-run.js';
 export { registerRunCommand } from './run/command.js';
 
@@ -30,6 +33,7 @@ export function createBduiCli(): Command {
     sortOptions: true,
   });
 
+  registerInitCommand(program);
   registerRunCommand(program);
 
   // Placeholder default action: display help for now.

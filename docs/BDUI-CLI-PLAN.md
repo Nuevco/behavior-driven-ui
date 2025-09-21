@@ -95,11 +95,11 @@
    - Post-check guardrails.
    - Tests to add: Vitest suite mocking `runBduiFeatures` verifying option merging, enforced defaults, failure surfacing, and CLI option plumbing.
 
-9. 🔴 **Implement `bdui init` Command**
+9. 🟢 **Implement `bdui init` Command**
    - Pre-check guardrails.
-   - Change: add scaffolding command creating config/feature/step directories idempotently.
+   - Change: added `executeInit` scaffolder (project root discovery, default config authoring, empty feature/step directories with `.gitkeep`, env-friendly logging) and registered the `init` subcommand on the CLI.
    - Post-check guardrails.
-   - Tests to add: integration test running CLI in a temp directory verifying created files and safe re-runs.
+   - Tests added: Vitest coverage creating temp workspaces (initial scaffold + idempotent re-run) and CLI-level mocks verifying option plumbing and console output.
 
 10. 🔴 **Update `react-sample` to Use CLI**
     - Pre-check guardrails.
