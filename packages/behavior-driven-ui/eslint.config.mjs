@@ -17,6 +17,38 @@ export default [
     },
   },
   {
+    files: ['bin.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'commonjs',
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        require: 'readonly',
+        __dirname: 'readonly',
+      },
+    },
+    rules: {
+      'no-console': 'off',
+    },
+  },
+  {
+    files: ['scripts/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'commonjs',
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        require: 'readonly',
+        module: 'readonly',
+      },
+    },
+    rules: {
+      'no-console': 'off',
+    },
+  },
+  {
     ignores: ['dist/**/*', '*.d.ts', '*.d.mts'],
   },
 ];

@@ -27,6 +27,7 @@
     "format:fix": "turbo run format:fix",
     "quality:check": "turbo run quality:check",
     "clean": "turbo run clean && rm -rf node_modules",
+    "playwright:install": "pnpm exec playwright install chromium",
     "validate:config": "cd tools/config-validation && npm run validate",
     "pack:tarballs": "pnpm -r --filter ./packages... pack --pack-destination ./dist/tarballs",
     "bdui:shell": "pnpm --filter behavior-driven-ui exec -- bash",

@@ -32,11 +32,13 @@
   },
   "files": [
     "bin.js",
+    "scripts/install-playwright.js",
     "dist/**/*",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
+    "postinstall": "node ./scripts/install-playwright.js",
     "build": "pnpm run lint && pnpm run type:check && tsup",
     "dev": "tsup --watch",
     "lint": "eslint . --max-warnings 0",

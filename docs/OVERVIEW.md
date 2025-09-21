@@ -22,6 +22,8 @@ Strict lint/typecheck guardrails remain in place across the monorepo.
 - ⚠️ Shared feature corpus (`features/`) is a placeholder; frameworks still host
   their own copies
 - ✅ Jest/WebDriver adapters removed; only active packages remain, future adapters will be reintroduced deliberately
+- ✅ Playwright Chromium installs automatically during `behavior-driven-ui`
+  postinstall; CI caches browser binaries so CLI runs never miss a browser
 
 ## Immediate Priorities
 1. **Ship a real Playwright driver** to replace the mock driver
@@ -39,8 +41,8 @@ Strict lint/typecheck guardrails remain in place across the monorepo.
 ## Roadmap — One Step at a Time
 | Order | Task | Owner/Status | Notes |
 |-------|------|--------------|-------|
-| 1 | Set up CI & dry-run packaging | 🔜 Planned | GitHub Actions runs `pnpm run build:force`, `pnpm run test:force`, doc lint, CLI/matrix tests on feature branches; produces tarballs without publishing |
-| 2 | Implement Playwright-based driver and wire CLI defaults | 🔜 Planned | Blocks credible demo scenarios |
+| 1 | Set up CI & dry-run packaging | ✅ Complete | GitHub Actions runs `pnpm run build:force`, `pnpm run test:force`, doc lint, CLI/matrix tests on feature branches; produces tarballs without publishing |
+| 2 | Implement Playwright-based driver and wire CLI defaults | 🔜 Planned | Blocks credible demo scenarios; browser binaries now install automatically during package postinstall |
 | 3 | Remove Jest/WebDriver adapter scaffolds | ✅ Complete | Packages removed; revisit adapters when needed |
 | 4 | Consolidate shared features under `/features/ui` and update configs | 🔜 Planned | Enables multiple framework apps to share coverage |
 | 5 | Build out cross-framework samples (React w/ MUI, Angular, Vue, Next.js, Qwik) | ⏳ Backlog | Each app consumes shared features and runs via Playwright |

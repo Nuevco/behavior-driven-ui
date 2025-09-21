@@ -26,6 +26,11 @@
 3. **Test Validation**: `npm test` must show all tests passing
 4. **Branch Verification**: Confirm correct branch for changes
 
+> Fresh installs automatically download Playwright’s Chromium browser via the
+> `behavior-driven-ui` postinstall hook. If you clear caches (or set
+> `BDUI_SKIP_BROWSER_INSTALL`), run `pnpm playwright:install` before executing
+> the guardrail commands so `bdui run` has a browser available.
+
 #### Failure Handling Rules
 - **Build Failures**: Maximum 3 attempts to fix build issues
   - After 3 failed attempts, MUST STOP and report challenges to user

@@ -35,6 +35,7 @@ Goal: Enterprise-grade BDD UI testing framework with cross-framework validation 
 - Lint (`pnpm lint`) and TS checks (`pnpm type:check`) still build-blocking via turbo pipeline
 - Dual-module builds succeed: `pnpm build` (turbo) runs all package/app builds in ~11s cached
 - Compiled CLI registers loaders automatically; `pnpm --filter react-sample run test` now succeeds via `bdui run`
+- Playwright Chromium installs automatically during `behavior-driven-ui`’s postinstall; CI caches `~/.cache/ms-playwright` so browser downloads don’t reoccur every run
 
 ## 📉 Gaps vs Documentation
 - Prior docs assumed only `core/` existed inside `behavior-driven-ui`; now `cucumber/` is equally important and must be documented (done in OVERVIEW refresh).

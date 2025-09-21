@@ -58,6 +58,11 @@ pnpm exec bdui init   # optional but recommended scaffolding
 pnpm exec bdui run    # execute your features
 ```
 
+The package’s `postinstall` hook downloads Playwright’s Chromium browser so the
+CLI can drive a real browser immediately after install. Set
+`BDUI_SKIP_BROWSER_INSTALL=1` before installation if your pipeline provisions
+Playwright separately. To reinstall manually run `pnpm playwright:install`.
+
 `bdui init` creates:
 
 - `bdui.config.ts` with sensible defaults (`features/**/*.feature`,
@@ -119,6 +124,10 @@ scenarios pass across all frameworks.
 - **Scenarios can’t find steps** – Confirm your custom step files match the
   `steps` glob in `bdui.config.ts` and use a supported extension (`.ts`, `.tsx`,
   `.js`, `.jsx`).
+- **Chromium missing** – Re-run `pnpm playwright:install` or reinstall the
+  package. If you disabled the automatic install with
+  `BDUI_SKIP_BROWSER_INSTALL`, make sure your environment provisions
+  Playwright’s browsers before calling `bdui run`.
 - **TypeScript config load issues** – Run `pnpm run bdui:build` to compile the
   CLI; it includes loader registration and avoids `ERR_UNKNOWN_FILE_EXTENSION`.
 - **Need additional primitives** – Drop new step definitions in

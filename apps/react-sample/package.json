@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint src --ext ts,tsx --max-warnings 0",
     "type:check": "tsc --noEmit",
+    "pretest": "node ./scripts/assert-playwright-ready.js",
     "test": "bdui run"
   },
   "dependencies": {

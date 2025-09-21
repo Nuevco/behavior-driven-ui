@@ -1,12 +1,14 @@
 #!/usr/bin/env node
-import console from 'node:console';
-import { existsSync } from 'node:fs';
-import path from 'node:path';
-import process from 'node:process';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+'use strict';
+
+const console = require('node:console');
+const { existsSync } = require('node:fs');
+const path = require('node:path');
+const process = require('node:process');
+const { pathToFileURL } = require('node:url');
 
 async function runCli() {
-  const packageRoot = path.dirname(fileURLToPath(import.meta.url));
+  const packageRoot = __dirname;
   const distEntry = path.join(packageRoot, 'dist', 'cli.js');
 
   if (existsSync(distEntry)) {
@@ -14,12 +16,12 @@ async function runCli() {
     return;
   }
 
-  const tsxModule = await import('tsx/esm/api');
-  if (typeof tsxModule.register !== 'function') {
+  const { register } = await import('tsx/esm/api');
+  if (typeof register !== 'function') {
     throw new Error('tsx.register was not available');
   }
 
-  tsxModule.register({
+  register({
     jsx: 'preserve',
     format: { '\\.(tsx?)$': 'module' },
   });
