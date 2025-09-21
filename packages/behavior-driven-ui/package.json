@@ -28,9 +28,10 @@
     }
   },
   "bin": {
-    "bdui": "./dist/cli.js"
+    "bdui": "./bin.js"
   },
   "files": [
+    "bin.js",
     "dist/**/*",
     "README.md",
     "LICENSE"
