@@ -104,9 +104,9 @@ export async function executeRun(
     ? { cwd, configPathOverride }
     : { cwd };
 
-  const configResult = await loadBduiConfig(loaderOptions);
-
   await ensureLoadersRegistered();
+
+  const configResult = await loadBduiConfig(loaderOptions);
 
   const stepFiles = await resolveStepFilesFromConfig(
     configResult.resolvedConfig.projectRoot,

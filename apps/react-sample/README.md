@@ -12,6 +12,7 @@ supported Node 20 releases.
 - `pnpm --filter react-sample preview` – preview the production build locally.
 - `pnpm --filter react-sample lint` – run ESLint on the source directory.
 - `pnpm --filter react-sample type:check` – run TypeScript without emitting files.
+- `pnpm --filter react-sample test` – execute the BDUI CLI against the sample features.
 
 ## Node.js compatibility
 

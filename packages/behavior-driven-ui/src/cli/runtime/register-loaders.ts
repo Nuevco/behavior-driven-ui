@@ -4,13 +4,29 @@ interface TsxModule {
 
 let loadersRegistered = false;
 
+async function loadTsxModule(): Promise<TsxModule> {
+  try {
+    return (await import('tsx/esm/api')) as TsxModule;
+  } catch (error) {
+    const maybeCode =
+      error && typeof error === 'object' && 'code' in error
+        ? (error as { code?: unknown }).code
+        : undefined;
+    if (maybeCode !== 'ERR_MODULE_NOT_FOUND') {
+      throw error;
+    }
+  }
+
+  return (await import('tsx')) as TsxModule;
+}
+
 export async function ensureLoadersRegistered(): Promise<void> {
   if (loadersRegistered) {
     return;
   }
 
   try {
-    const tsxModule = (await import('tsx')) as TsxModule;
+    const tsxModule = await loadTsxModule();
     if (typeof tsxModule.register !== 'function') {
       throw new Error('tsx.register was not available');
     }

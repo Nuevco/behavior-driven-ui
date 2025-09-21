@@ -36,7 +36,7 @@ export default defineConfig({
   minify: false, // Keep readable for now during development
 
   // External dependencies (don't bundle)
-  external: ['@playwright/test', '@cucumber/cucumber', 'commander'],
+  external: ['@playwright/test', '@cucumber/cucumber', 'commander', 'tsx', 'tsx/esm/api'],
 
   // Output naming
   outExtension({ format }) {

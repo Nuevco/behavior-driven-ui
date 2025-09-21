@@ -8,7 +8,7 @@ beforeEach(() => {
 
 it('registers tsx only once', async () => {
   const registerMock = vi.fn();
-  vi.doMock('tsx', () => ({
+  vi.doMock('tsx/esm/api', () => ({
     register: registerMock,
   }));
 
@@ -23,6 +23,7 @@ it('registers tsx only once', async () => {
 });
 
 it('throws when tsx.register is unavailable', async () => {
+  vi.doMock('tsx/esm/api', () => ({}));
   vi.doMock('tsx', () => ({}));
 
   const { ensureLoadersRegistered } = (await import(

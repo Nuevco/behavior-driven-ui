@@ -101,11 +101,11 @@
    - Post-check guardrails.
    - Tests added: Vitest coverage creating temp workspaces (initial scaffold + idempotent re-run) and CLI-level mocks verifying option plumbing and console output.
 
-10. 🔴 **Update `react-sample` to Use CLI**
+10. 🟢 **Update `react-sample` to Use CLI**
     - Pre-check guardrails.
-    - Change: remove `cucumber.ts`, update scripts to call `bdui run`, and include CLI-generated scaffolding artifacts if applicable.
+    - Change: removed bespoke `cucumber.ts`, introduced `bdui.config.ts` + scaffolded steps directory, and swapped the sample’s `test` script to `bdui run`.
     - Post-check guardrails.
-    - Tests to add: ensure existing cucumber scenarios run via CLI by executing `pnpm --filter react-sample run test` in an integration test.
+    - Tests added: executed `pnpm --filter react-sample run test` (passes via CLI), plus `pnpm run bdui:build` to ensure the compiled runner includes loader registration changes.
 
 11. 🔴 **Repository-Level Integration Smoke Test**
     - Pre-check guardrails.
