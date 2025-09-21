@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint src --ext ts,tsx --max-warnings 0",
     "type:check": "tsc --noEmit",
-    "test": "bdui run"
+    "test": "pnpm exec bdui run"
   },
   "dependencies": {
     "react": "^18.3.1",
