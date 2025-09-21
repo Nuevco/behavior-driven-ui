@@ -3,6 +3,11 @@ import { fileURLToPath } from 'node:url';
 
 import { Command } from 'commander';
 
+export {
+  resolveStepFiles,
+  resolveStepFilesFromConfig,
+} from './steps/resolve-step-files.js';
+
 /**
  * Placeholder context for future CLI wiring.
  * Additional shared CLI state can be added here in subsequent steps.

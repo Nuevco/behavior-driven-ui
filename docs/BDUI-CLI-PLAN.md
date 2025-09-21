@@ -77,13 +77,13 @@
    - Post-check guardrails.
    - Tests to add: unit tests covering valid config, missing config fallback, and schema validation errors.
 
-6. 🟡 **Step Discovery Utilities**
+6. 🟢 **Step Discovery Utilities**
    - Pre-check guardrails.
    - Change: implement functions to resolve step files via conventions/globs without executing them.
    - Post-check guardrails.
    - Tests to add: unit tests using temp directories verifying glob behavior and deduplication.
 
-7. 🔴 **TypeScript/ESM Loader Registration**
+7. 🟡 **TypeScript/ESM Loader Registration**
    - Pre-check guardrails.
    - Change: add module that registers `tsx` (or similar) once before loading user steps to support TS/ESM files.
    - Post-check guardrails.
