@@ -21,7 +21,7 @@ Strict lint/typecheck guardrails remain in place across the monorepo.
   real UI validation
 - ⚠️ Shared feature corpus (`features/`) is a placeholder; frameworks still host
   their own copies
-- ✅ Jest/WebDriver adapter scaffolds removed; future adapters will be added when needed
+- ✅ Jest/WebDriver adapters removed; only active packages remain, future adapters will be reintroduced deliberately
 
 ## Immediate Priorities
 1. **Ship a real Playwright driver** to replace the mock driver
@@ -42,8 +42,9 @@ Strict lint/typecheck guardrails remain in place across the monorepo.
 | 1 | Implement Playwright-based driver and wire CLI defaults | 🔜 Planned | Blocks credible demo scenarios |
 | 2 | Remove Jest/WebDriver adapter scaffolds | ✅ Complete | Packages removed; revisit adapters when needed |
 | 3 | Consolidate shared features under `/features/ui` and update configs | 🔜 Planned | Enables multiple framework apps to share coverage |
-| 4 | Build out cross-framework samples (React w/ MUI, Next.js, Angular, Vue) | ⏳ Backlog | Each app consumes shared features and runs via Playwright |
-| 5 | Introduce CI/tarball packaging after real driver + shared features land | ⏳ Backlog | Ensures publish/readiness |
+| 4 | Build out cross-framework samples (React w/ MUI, Angular, Vue, Next.js, Qwik) | ⏳ Backlog | Each app consumes shared features and runs via Playwright |
+| 5 | Round-two frameworks (Svelte, SvelteKit, Vue SSR/Nuxt) | ⏳ Backlog | Extend shared scenarios once initial matrix is stable |
+| 6 | Introduce CI/tarball packaging after real driver + shared features land | ⏳ Backlog | Ensures publish/readiness |
 
 Status icons: ✅ Done · 🔜 Planned/In Progress · ⏳ Backlog
 

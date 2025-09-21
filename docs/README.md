@@ -103,6 +103,16 @@ pnpm --filter react-sample run test
 That command builds the CLI and runs cucumber using the shared step library plus
 any custom steps the sample adds. It demonstrates how fast teams can start
 writing meaningful scenarios when they don’t have to bootstrap cucumber first.
+Future framework demos will use the same pattern.
+
+## Framework Roadmap
+- **Bootstrap targets**: React (with MUI), Angular, Vue, Next.js, Qwik — each
+  will receive a `<framework>-sample` app consuming the shared feature corpus and
+  running through Playwright.
+- **Round two**: Svelte, SvelteKit, and Vue SSR/Nuxt once the initial matrix is
+  stable.
+The shared BDUI step library must remain DOM/Playwright-centric so the same
+scenarios pass across all frameworks.
 
 ## Troubleshooting Tips
 
