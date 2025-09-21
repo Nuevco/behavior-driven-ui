@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build (force)
+        run: pnpm run build:force
+
+      - name: Test (force)
+        run: pnpm run test:force
+
+      - name: Documentation lint
+        run: pnpm run format:check
+
+      - name: Build CLI bundle
+        run: pnpm run bdui:build
+
+      - name: Package tests — behavior-driven-ui
+        run: pnpm --filter behavior-driven-ui test
+
+      - name: Package tests — react-sample
+        run: pnpm --filter react-sample run test
+
+      - name: Dry-run packages
+        run: pnpm run packages:pack:dry
+
+      - name: Upload dry-run tarballs
+        uses: actions/upload-artifact@v4
+        with:
+          name: dry-run-tarballs
+          path: dist/tarballs

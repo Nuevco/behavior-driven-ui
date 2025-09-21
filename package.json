@@ -49,7 +49,8 @@
     "packages:build": "pnpm bdui:build && pnpm free-paths:build",
     "packages:test": "turbo run test --filter='./packages/*'",
     "packages:lint": "turbo run lint --filter='./packages/*'",
-    "packages:clean": "turbo run clean --filter='./packages/*'"
+    "packages:clean": "turbo run clean --filter='./packages/*'",
+    "packages:pack:dry": "rm -rf dist/tarballs && mkdir -p dist/tarballs && pnpm --filter @nuevco/free-paths exec pnpm pack --pack-destination ../../dist/tarballs && pnpm --filter behavior-driven-ui exec pnpm pack --pack-destination ../../dist/tarballs"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
