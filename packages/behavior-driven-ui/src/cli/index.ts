@@ -7,6 +7,7 @@ export {
   resolveStepFiles,
   resolveStepFilesFromConfig,
 } from './steps/resolve-step-files.js';
+export { ensureLoadersRegistered } from './runtime/register-loaders.js';
 
 /**
  * Placeholder context for future CLI wiring.

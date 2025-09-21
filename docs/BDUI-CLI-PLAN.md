@@ -83,13 +83,13 @@
    - Post-check guardrails.
    - Tests to add: unit tests using temp directories verifying glob behavior and deduplication.
 
-7. 🟡 **TypeScript/ESM Loader Registration**
+7. 🟢 **TypeScript/ESM Loader Registration**
    - Pre-check guardrails.
    - Change: add module that registers `tsx` (or similar) once before loading user steps to support TS/ESM files.
    - Post-check guardrails.
    - Tests to add: unit test to ensure loader runs once; integration test proving a TS step file can be imported.
 
-8. 🔴 **Implement `bdui run` Command**
+8. 🟡 **Implement `bdui run` Command**
    - Pre-check guardrails.
    - Change: wire CLI run command to load config, register core steps, load user steps, sanitize cucumber options, and invoke `runBduiFeatures`.
    - Post-check guardrails.
