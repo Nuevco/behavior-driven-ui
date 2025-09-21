@@ -13,7 +13,11 @@ async function loadTsxModule(): Promise<TsxModule> {
         ? (error as { code?: unknown }).code
         : undefined;
     if (maybeCode !== 'ERR_MODULE_NOT_FOUND') {
-      throw error;
+      const cause =
+        error instanceof Error
+          ? error
+          : new Error(String(error ?? 'Unknown loader error'));
+      throw cause;
     }
   }
 
@@ -38,9 +42,13 @@ export async function ensureLoadersRegistered(): Promise<void> {
 
     loadersRegistered = true;
   } catch (error) {
+    const cause =
+      error instanceof Error
+        ? error
+        : new Error(String(error ?? 'Unknown loader error'));
     throw new Error(
       'Failed to register TypeScript/ESM loaders via tsx. Install "tsx" or configure a loader manually.',
-      { cause: error }
+      { cause }
     );
   }
 }

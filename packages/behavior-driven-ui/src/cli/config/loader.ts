@@ -208,9 +208,13 @@ async function loadConfigModule(configPath: string): Promise<unknown> {
 
     return importedModule;
   } catch (error) {
+    const cause =
+      error instanceof Error
+        ? error
+        : new Error(String(error ?? 'Unknown error'));
     throw new BduiConfigError(
       `Unable to import configuration file at ${configPath}`,
-      error
+      cause
     );
   }
 }

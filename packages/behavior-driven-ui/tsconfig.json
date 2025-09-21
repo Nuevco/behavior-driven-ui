@@ -9,7 +9,9 @@
       "@/drivers/*": ["./drivers/*"],
       "@/runners/*": ["./runners/*"],
       "@/presets/*": ["./presets/*"],
-      "@/cli/*": ["./cli/*"]
+      "@/cli/*": ["./cli/*"],
+      "@nuevco/free-paths": ["../free-paths/src/index.ts"],
+      "@nuevco/free-paths/*": ["../free-paths/src/*"]
     }
   },
   "include": [
