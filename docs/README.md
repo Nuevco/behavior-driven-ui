@@ -100,6 +100,8 @@ library. Feature files stay under `features/`.
 
 - `driver.kind` accepts `playwright` (default) or `mock`. The mock driver is useful
   for unit tests; the CLI defaults to Playwright for real browser coverage.
+- In this monorepo the canonical scenarios live under `features/ui/`, and sample
+  apps reference them via a relative glob (e.g. `features: ['../features/ui/**/*.feature']`).
 
 ## Example Project
 

@@ -1,5 +1,5 @@
 export default {
   baseURL: 'about:blank',
-  features: ['features/**/*.feature'],
+  features: ['../../features/ui/**/*.feature'],
   steps: ['bdui/steps/**/*.{ts,js}'],
 };

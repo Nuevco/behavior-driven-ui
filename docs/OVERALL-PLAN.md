@@ -17,7 +17,7 @@
 |------|--------|-------------|------------|
 | 2.1 | ✅ Complete | Default Playwright driver with mock fallback, browser install hook | `pnpm run build:force`, `pnpm run test:force`, `pnpm --filter react-sample run test` |
 | 2.2 | ✅ Complete | Lock `driver.kind` to `playwright`/`mock`; update docs and config schema accordingly | `pnpm run bdui:build`, `pnpm run test:force` |
-| 2.3 | 🔜 Planned | Shared feature corpus under `features/ui`; react-sample consumes it | `pnpm --filter react-sample run test`, `pnpm run test:force` |
+| 2.3 | ✅ Complete | Shared feature corpus under `features/ui`; react-sample consumes it | `pnpm --filter react-sample run test`, `pnpm run test:force` |
 | 2.4 | 🔜 Planned | Playwright driver parity for existing core steps (forms/selects/basic waits) | Vitest integration suite + `pnpm run test:force` |
 | 2.5 | 🔜 Planned | CLI driver overrides (`--driver.browser`, `--driver.headless`) & docs | CLI integration test + guardrail commands |
 | 2.6 | 🔜 Planned | Scenario lifecycle screenshots (opt-in) with artifact verification | New failing-scenario test + `pnpm run test:force` |

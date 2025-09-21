@@ -26,21 +26,22 @@ Strict lint/typecheck guardrails remain in place across the monorepo.
   postinstall; CI caches browser binaries so CLI runs never miss a browser
 
 ## Immediate Priorities
-1. **Phase 2.3 – Shared feature corpus** to reuse the same scenarios across every sample app
-2. **Phase 2.4 – Playwright parity for existing core steps** covering forms/selects/basic waits
-3. **Phase 2.5 – CLI driver overrides** so headless/headed/browser toggles are configurable from the CLI
+1. **Phase 2.4 – Playwright parity for existing core steps** covering forms/selects/basic waits
+2. **Phase 2.5 – CLI driver overrides** so headless/headed/browser toggles are configurable from the CLI
+3. **Phase 2.6 – Scenario lifecycle screenshots** to capture artifacts on failure
 
 ## Roadmap — One Step at a Time
 | Order | Task | Owner/Status | Notes |
 |-------|------|--------------|-------|
 | 1 | Set up CI & dry-run packaging | ✅ Complete | GitHub Actions runs `pnpm run build:force`, `pnpm run test:force`, doc lint, CLI/matrix tests on feature branches; produces tarballs without publishing |
 | 2 | Phase 2.2 – Lock driver surface | ✅ Complete | Restricted config/CLI to `playwright` or `mock`, docs updated |
-| 3 | Phase 2.3 – Shared feature corpus | 🔜 Planned | Move scenarios to `/features/ui`; react-sample consumes shared files |
+| 3 | Phase 2.3 – Shared feature corpus | ✅ Complete | Moved scenarios to `/features/ui`; react-sample consumes shared files |
 | 4 | Phase 2.4 – Playwright parity for core steps | 🔜 Planned | Ensure driver supports forms/selects/basic waits with tests |
 | 5 | Phase 2.5 – CLI driver overrides | 🔜 Planned | Allow CLI/browser overrides with tests and docs |
-| 6 | Remove Jest/WebDriver adapter scaffolds | ✅ Complete | Packages removed; revisit adapters when needed |
-| 7 | Build out cross-framework samples (React w/ MUI, Angular, Vue, Next.js, Qwik) | ⏳ Backlog | Each app consumes shared features and runs via Playwright |
-| 8 | Round-two frameworks (Svelte, SvelteKit, Vue SSR/Nuxt) | ⏳ Backlog | Extend shared scenarios once initial matrix is stable |
+| 6 | Phase 2.6 – Scenario lifecycle screenshots | 🔜 Planned | Capture opt-in screenshots on failure and persist artifacts |
+| 7 | Remove Jest/WebDriver adapter scaffolds | ✅ Complete | Packages removed; revisit adapters when needed |
+| 8 | Build out cross-framework samples (React w/ MUI, Angular, Vue, Next.js, Qwik) | ⏳ Backlog | Each app consumes shared features and runs via Playwright |
+| 9 | Round-two frameworks (Svelte, SvelteKit, Vue SSR/Nuxt) | ⏳ Backlog | Extend shared scenarios once initial matrix is stable |
 
 Status icons: ✅ Done · 🔜 Planned/In Progress · ⏳ Backlog
 

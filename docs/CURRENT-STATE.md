@@ -44,9 +44,9 @@ Goal: Enterprise-grade BDD UI testing framework with cross-framework validation 
 - React sample app, Jest/WebDriver packages, and the new fallback import logic were missing from previous narratives—now captured in this update.
 
 ## 🔜 Near-Term Focus (Next 2–3 sprints)
-1. Phase 2.3 – Stand up shared `/features/ui` corpus and point react-sample at it
-2. Phase 2.4 – Bring Playwright driver to parity with existing core steps (forms/selects/basic waits)
-3. Phase 2.5 – CLI driver overrides for browser/headless selection
+1. Phase 2.4 – Bring Playwright driver to parity with existing core steps (forms/selects/basic waits)
+2. Phase 2.5 – CLI driver overrides for browser/headless selection
+3. Phase 2.6 – Scenario lifecycle screenshots and artifact retention
 4. Phase 3 – Begin new step library work (keyboard, accessibility, network, etc.) once parity lands
 5. Phase 4 – Start adding additional framework samples (React + MUI first) after shared corpus is live
 
