@@ -14,9 +14,10 @@
 ## Active Workstream — Deliver an MVP with Real Browser Coverage
 | Order | Focus | Status | Acceptance Criteria |
 |-------|-------|--------|---------------------|
-| 1 | **Playwright driver implementation** | 🔜 In progress | `bdui run` drives a real Playwright browser by default; mock driver optional for unit tests |
-| 2 | **Remove unused adapter scaffolds** | ✅ Complete | Deleted `behavior-driven-ui-jest` / `behavior-driven-ui-webdriver` from the repo |
-| 3 | **Shared feature corpus** | 🔜 In progress | Common scenarios live in `/features/ui`; `react-sample` consumes them via config |
+| 1 | **CI & packaging scaffold** | 🔜 Planned | GitHub Actions workflow runs `pnpm run build:force`, `pnpm run test:force`, doc lint, `pnpm run bdui:build`, and matrix tests on feature branches; publishes dry-run tarballs without pushing |
+| 2 | **Playwright driver implementation** | 🔜 In progress | `bdui run` drives a real Playwright browser by default; mock driver optional for unit tests |
+| 3 | **Remove unused adapter scaffolds** | ✅ Complete | Deleted `behavior-driven-ui-jest` / `behavior-driven-ui-webdriver` from the repo |
+| 4 | **Shared feature corpus** | 🔜 In progress | Common scenarios live in `/features/ui`; `react-sample` consumes them via config |
 
 ## Near-Term Backlog (Execute after the MVP trio)
 | Item | Description | Status |

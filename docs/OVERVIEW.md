@@ -39,12 +39,12 @@ Strict lint/typecheck guardrails remain in place across the monorepo.
 ## Roadmap — One Step at a Time
 | Order | Task | Owner/Status | Notes |
 |-------|------|--------------|-------|
-| 1 | Implement Playwright-based driver and wire CLI defaults | 🔜 Planned | Blocks credible demo scenarios |
-| 2 | Remove Jest/WebDriver adapter scaffolds | ✅ Complete | Packages removed; revisit adapters when needed |
-| 3 | Consolidate shared features under `/features/ui` and update configs | 🔜 Planned | Enables multiple framework apps to share coverage |
-| 4 | Build out cross-framework samples (React w/ MUI, Angular, Vue, Next.js, Qwik) | ⏳ Backlog | Each app consumes shared features and runs via Playwright |
-| 5 | Round-two frameworks (Svelte, SvelteKit, Vue SSR/Nuxt) | ⏳ Backlog | Extend shared scenarios once initial matrix is stable |
-| 6 | Introduce CI/tarball packaging after real driver + shared features land | ⏳ Backlog | Ensures publish/readiness |
+| 1 | Set up CI & dry-run packaging | 🔜 Planned | GitHub Actions runs `pnpm run build:force`, `pnpm run test:force`, doc lint, CLI/matrix tests on feature branches; produces tarballs without publishing |
+| 2 | Implement Playwright-based driver and wire CLI defaults | 🔜 Planned | Blocks credible demo scenarios |
+| 3 | Remove Jest/WebDriver adapter scaffolds | ✅ Complete | Packages removed; revisit adapters when needed |
+| 4 | Consolidate shared features under `/features/ui` and update configs | 🔜 Planned | Enables multiple framework apps to share coverage |
+| 5 | Build out cross-framework samples (React w/ MUI, Angular, Vue, Next.js, Qwik) | ⏳ Backlog | Each app consumes shared features and runs via Playwright |
+| 6 | Round-two frameworks (Svelte, SvelteKit, Vue SSR/Nuxt) | ⏳ Backlog | Extend shared scenarios once initial matrix is stable |
 
 Status icons: ✅ Done · 🔜 Planned/In Progress · ⏳ Backlog
 
