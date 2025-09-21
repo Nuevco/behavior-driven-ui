@@ -65,19 +65,19 @@
    - Post-check guardrails.
    - Tests to add: the smoke test itself executed via `pnpm --filter behavior-driven-ui run test`.
 
-4. 🟡 **Hook CLI into Build Outputs**
+4. 🟢 **Hook CLI into Build Outputs**
    - Pre-check guardrails.
    - Change: update `tsup.config.ts`, package `bin` field, and exports to emit compiled CLI artifacts.
    - Post-check guardrails.
    - Tests to add: extend Vitest coverage to assert tsup config contains the CLI entry or run a bundling smoke test if feasible.
 
-5. 🔴 **Configuration Loader & Validation**
+5. 🟢 **Configuration Loader & Validation**
    - Pre-check guardrails.
    - Change: implement config discovery (`bdui.config.*`) with zod validation and defaults.
    - Post-check guardrails.
    - Tests to add: unit tests covering valid config, missing config fallback, and schema validation errors.
 
-6. 🔴 **Step Discovery Utilities**
+6. 🟡 **Step Discovery Utilities**
    - Pre-check guardrails.
    - Change: implement functions to resolve step files via conventions/globs without executing them.
    - Post-check guardrails.

@@ -35,6 +35,7 @@
     "bdui:lint:fix": "pnpm --filter behavior-driven-ui lint:fix",
     "bdui:type:check": "pnpm --filter behavior-driven-ui type:check",
     "bdui:test": "pnpm --filter behavior-driven-ui test",
+    "bdui:test:verbose": "pnpm --filter behavior-driven-ui test:verbose",
     "bdui:clean": "pnpm --filter behavior-driven-ui clean",
     "free-paths:build": "pnpm --filter @nuevco/free-paths build",
     "free-paths:test": "pnpm --filter @nuevco/free-paths test",

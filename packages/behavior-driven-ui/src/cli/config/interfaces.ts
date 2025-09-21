@@ -19,8 +19,8 @@ export const BduiEnvironmentVariablesSchema = z.record(z.string().min(1));
 
 /** Basic driver options most teams toggle when running UI tests locally or in CI. */
 export interface BduiDriverDef {
-  readonly browser?: 'chromium' | 'firefox' | 'webkit';
-  readonly headless?: boolean;
+  readonly browser?: 'chromium' | 'firefox' | 'webkit' | undefined;
+  readonly headless?: boolean | undefined;
 }
 export const BduiDriverDefSchema = z.object({
   browser: z.enum(['chromium', 'firefox', 'webkit']).optional(),
@@ -31,7 +31,7 @@ export const BduiDriverDefSchema = z.object({
 export interface BduiWebServerDef {
   readonly command: string;
   readonly port: number;
-  readonly reuseExistingServer?: boolean;
+  readonly reuseExistingServer?: boolean | undefined;
   // Future: add health check endpoints, ready timeouts, etc.
 }
 export const BduiWebServerDefSchema = z.object({
@@ -42,8 +42,8 @@ export const BduiWebServerDefSchema = z.object({
 
 /** Cucumber overrides limited to the common tag + order tweaks. */
 export interface BduiCucumberOptionsDef {
-  readonly tagExpression?: string;
-  readonly order?: 'defined' | 'random';
+  readonly tagExpression?: string | undefined;
+  readonly order?: 'defined' | 'random' | undefined;
   // Future: expose formatter + runtime knobs once the basics are validated.
 }
 export const BduiCucumberOptionsDefSchema = z.object({
@@ -56,14 +56,14 @@ export const BduiCucumberOptionsDefSchema = z.object({
  * Keep this intentionally small so onboarding stays smooth.
  */
 export interface BduiCliConfigDef {
-  readonly projectRoot?: string;
-  readonly baseURL?: string;
-  readonly features?: BduiGlobInput;
-  readonly steps?: BduiGlobInput;
-  readonly driver?: BduiDriverDef;
-  readonly webServer?: BduiWebServerDef;
-  readonly cucumber?: BduiCucumberOptionsDef;
-  readonly environment?: BduiEnvironmentVariables;
+  readonly projectRoot?: string | undefined;
+  readonly baseURL?: string | undefined;
+  readonly features?: BduiGlobInput | undefined;
+  readonly steps?: BduiGlobInput | undefined;
+  readonly driver?: BduiDriverDef | undefined;
+  readonly webServer?: BduiWebServerDef | undefined;
+  readonly cucumber?: BduiCucumberOptionsDef | undefined;
+  readonly environment?: BduiEnvironmentVariables | undefined;
   // Future: allow advanced runtime overrides (breakpoints, mocks, etc.).
 }
 export const BduiCliConfigDefSchema = z.object({
@@ -105,7 +105,7 @@ export interface BduiResolvedConfigDef {
   readonly features: string[];
   readonly steps: string[];
   readonly driver: BduiResolvedDriverDef;
-  readonly webServer?: BduiWebServerDef;
+  readonly webServer?: BduiWebServerDef | undefined;
   readonly cucumber: BduiResolvedCucumberOptionsDef;
   readonly environment: BduiEnvironmentVariables;
 }
