@@ -1,7 +1,6 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "rootDir": ".",
     "outDir": "./dist",
     "baseUrl": "./src",
     "paths": {
@@ -10,8 +9,8 @@
       "@/runners/*": ["./runners/*"],
       "@/presets/*": ["./presets/*"],
       "@/cli/*": ["./cli/*"],
-      "@nuevco/free-paths": ["../free-paths/src/index.ts"],
-      "@nuevco/free-paths/*": ["../free-paths/src/*"]
+      "@nuevco/free-paths": ["../../free-paths/src/index.ts"],
+      "@nuevco/free-paths/*": ["../../free-paths/src/*"]
     }
   },
   "include": [
