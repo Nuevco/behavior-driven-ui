@@ -22,7 +22,7 @@ export interface BehaviorDrivenUIConfig {
   /** Driver configuration for browser automation */
   driver?: {
     /** Type of driver to use */
-    kind: 'playwright' | 'webdriver' | 'cypress';
+    kind: 'playwright' | 'mock' | 'webdriver' | 'cypress';
     /** Browser to use (for Playwright) */
     browser?: 'chromium' | 'firefox' | 'webkit';
     /** Whether to run in headless mode */
@@ -69,6 +69,8 @@ export interface WorldConfig {
   config: BehaviorDrivenUIConfig;
   /** Driver instance */
   driver?: Driver;
+  /** Factory to lazily create the driver when needed */
+  driverFactory?: (() => Promise<Driver>) | null;
 }
 
 /**

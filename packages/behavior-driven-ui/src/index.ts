@@ -10,3 +10,6 @@ export * from './core/index.js';
 
 // Cucumber integration utilities
 export * from './cucumber/index.js';
+
+// Driver implementations
+export { PlaywrightDriver } from './driver/playwright/playwright-driver.js';

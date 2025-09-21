@@ -15,7 +15,7 @@
 | Order | Focus | Status | Acceptance Criteria |
 |-------|-------|--------|---------------------|
 | 1 | **CI & packaging scaffold** | ✅ Complete | GitHub Actions workflow runs `pnpm run build:force`, `pnpm run test:force`, doc lint, `pnpm run bdui:build`, and matrix tests on feature branches; publishes dry-run tarballs without pushing |
-| 2 | **Playwright driver implementation** | 🔜 In progress | `bdui run` drives a real Playwright browser by default; mock driver optional for unit tests. Browser binaries install automatically during package postinstall. |
+| 2 | **Playwright driver implementation** | ✅ Complete | `bdui run` now launches Playwright by default; mocked driver is available for unit tests and Playwright browsers install automatically during postinstall. |
 | 3 | **Remove unused adapter scaffolds** | ✅ Complete | Deleted `behavior-driven-ui-jest` / `behavior-driven-ui-webdriver` from the repo |
 | 4 | **Shared feature corpus** | 🔜 In progress | Common scenarios live in `/features/ui`; `react-sample` consumes them via config |
 

@@ -8,7 +8,7 @@ Goal: Enterprise-grade BDD UI testing framework with cross-framework validation 
 - Phase 2 has progressed well beyond Step 9: the cucumber runner, mock driver, core step library, and world/config abstractions are live and exercised by the new `react-sample` app.
 - Adapter scaffolds have been removed; only active packages remain in the workspace.
 - Shared top-level `/features` directory is still a placeholder—React sample currently hosts the only feature files.
-- Immediate focus shifts to delivering a real Playwright driver, expanding shared features, and bringing additional framework apps online.
+- Playwright driver now powers CLI runs by default, shifting focus toward the shared feature corpus and additional framework apps.
 
 ## 📦 Workspace Snapshot
 | Package / App | Status | Notes |
@@ -36,6 +36,7 @@ Goal: Enterprise-grade BDD UI testing framework with cross-framework validation 
 - Dual-module builds succeed: `pnpm build` (turbo) runs all package/app builds in ~11s cached
 - Compiled CLI registers loaders automatically; `pnpm --filter react-sample run test` now succeeds via `bdui run`
 - Playwright Chromium installs automatically during `behavior-driven-ui`’s postinstall; CI caches `~/.cache/ms-playwright` so browser downloads don’t reoccur every run
+- Real Playwright driver is available via `createDriverForConfig`, with the mock driver reserved for fast unit tests
 
 ## 📉 Gaps vs Documentation
 - Prior docs assumed only `core/` existed inside `behavior-driven-ui`; now `cucumber/` is equally important and must be documented (done in OVERVIEW refresh).
@@ -43,8 +44,8 @@ Goal: Enterprise-grade BDD UI testing framework with cross-framework validation 
 - React sample app, Jest/WebDriver packages, and the new fallback import logic were missing from previous narratives—now captured in this update.
 
 ## 🔜 Near-Term Focus (Next 2–3 sprints)
-1. Ship **Playwright driver integration** so `bdui run` exercises a real browser, not the mock driver
-2. Establish a **shared feature corpus** under `/features/ui` and refactor React sample (and future apps) to consume it
+1. Establish a **shared feature corpus** under `/features/ui` and refactor React sample (and future apps) to consume it
+2. Expand Playwright driver coverage (forms, assertions, network utilities) so core steps support richer scenarios
 3. Scaffold additional apps (React + MUI, Next.js, Angular, Vue) mirroring shared scenarios once the real driver lands
 4. Extend step libraries (forms, network stubbing, accessibility assertions)
 5. Establish tarball packaging + CI flows after real driver + shared features stabilize
@@ -52,6 +53,6 @@ Goal: Enterprise-grade BDD UI testing framework with cross-framework validation 
 ## 📌 Risks & Watch Items
 - Cucumber runner currently relies on `@cucumber/cucumber` internals via dynamic import; keep tests around `loadSupportBuilder` as versions change
 - Seatbelt constraints may still block long-running CLI invocations; document usage expectations for contributors and provide fallbacks when necessary
-- Additional framework apps will drive the need for real Playwright driver integration rather than the mock driver presently in use
+- Additional framework apps will validate the Playwright driver across rendering stacks; watch for framework-specific driver gaps
 
 Stay aligned with `docs/GUARDRAILS.md`: planning mode by default, request implementation authorization before altering source outside the docs suite.

@@ -18,7 +18,10 @@ export class World {
   public readonly config: WorldConfig['config'];
 
   /** Driver instance for browser automation */
-  public readonly driver: Driver;
+  private driverInstance: Driver | null;
+
+  /** Deferred driver factory used when a driver instance is not provided */
+  private readonly driverFactory: (() => Promise<Driver>) | null;
 
   /** Scenario-specific data storage */
   private readonly data = new Map<string, unknown>();
@@ -31,11 +34,40 @@ export class World {
   constructor(config: WorldConfig) {
     this.config = config.config;
 
-    if (!config.driver) {
-      throw new Error('Driver instance is required in WorldConfig');
+    this.driverInstance = config.driver ?? null;
+    this.driverFactory = config.driverFactory ?? null;
+
+    if (!this.driverInstance && !this.driverFactory) {
+      throw new Error('Driver instance or factory is required in WorldConfig');
+    }
+  }
+
+  /**
+   * Access the active driver instance. Ensure `ensureDriver` has been
+   * called before interacting with the driver to guarantee initialization.
+   */
+  public get driver(): Driver {
+    if (!this.driverInstance) {
+      throw new Error(
+        'Driver has not been initialized yet. Call ensureDriver() first.'
+      );
     }
 
-    this.driver = config.driver;
+    return this.driverInstance;
+  }
+
+  /** Lazily create the driver when a factory is provided. */
+  public async ensureDriver(): Promise<Driver> {
+    if (this.driverInstance) {
+      return this.driverInstance;
+    }
+
+    if (!this.driverFactory) {
+      throw new Error('Driver factory unavailable.');
+    }
+
+    this.driverInstance = await this.driverFactory();
+    return this.driverInstance;
   }
 
   /**
@@ -82,6 +114,8 @@ export class World {
     // Clear any previous scenario data
     this.clearData();
 
+    await this.ensureDriver();
+
     // Navigate to base URL if configured
     if (this.config.baseURL) {
       await this.driver.goto(this.config.baseURL);
@@ -104,6 +138,9 @@ export class World {
    */
   async destroy(): Promise<void> {
     this.clearData();
-    await this.driver.destroy();
+    if (this.driverInstance) {
+      await this.driverInstance.destroy();
+      this.driverInstance = null;
+    }
   }
 }

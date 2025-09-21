@@ -17,8 +17,8 @@ Strict lint/typecheck guardrails remain in place across the monorepo.
 - ✅ Dual ESM/CJS builds with `tsup`; CLI outputs live in `dist/`
 - ✅ `bdui run` / `bdui init` compiled and documented (`docs/README.md`)
 - ✅ `apps/react-sample` runs three scenarios via `pnpm --filter react-sample run test`
-- ⚠️ Mock driver still powers the runner; Playwright integration is required for
-  real UI validation
+- ✅ Playwright driver powers CLI runs by default; mock driver remains available
+  for fast unit tests
 - ⚠️ Shared feature corpus (`features/`) is a placeholder; frameworks still host
   their own copies
 - ✅ Jest/WebDriver adapters removed; only active packages remain, future adapters will be reintroduced deliberately
@@ -26,10 +26,10 @@ Strict lint/typecheck guardrails remain in place across the monorepo.
   postinstall; CI caches browser binaries so CLI runs never miss a browser
 
 ## Immediate Priorities
-1. **Ship a real Playwright driver** to replace the mock driver
-   - Implement `PlaywrightDriver` satisfying the `Driver` interface
-   - Surface configuration toggles (headless/browser selection) via `bdui.config`
-   - Update `react-sample` to execute through the real driver by default
+1. **Harden the Playwright driver** now that it powers the CLI by default
+   - Broaden command coverage (forms, expectations, screenshots)
+   - Expose configuration toggles (headless/browser selection) via `bdui.config`
+   - Document how to opt into the mock driver for unit tests
 2. **Remove unused adapter scaffolds**
    - Delete `behavior-driven-ui-jest` / `behavior-driven-ui-webdriver` so the repo
      only contains active packages (done)
@@ -42,7 +42,7 @@ Strict lint/typecheck guardrails remain in place across the monorepo.
 | Order | Task | Owner/Status | Notes |
 |-------|------|--------------|-------|
 | 1 | Set up CI & dry-run packaging | ✅ Complete | GitHub Actions runs `pnpm run build:force`, `pnpm run test:force`, doc lint, CLI/matrix tests on feature branches; produces tarballs without publishing |
-| 2 | Implement Playwright-based driver and wire CLI defaults | 🔜 Planned | Blocks credible demo scenarios; browser binaries now install automatically during package postinstall |
+| 2 | Implement Playwright-based driver and wire CLI defaults | ✅ Complete | CLI runs now launch Playwright by default; mock driver remains available for lightweight unit tests |
 | 3 | Remove Jest/WebDriver adapter scaffolds | ✅ Complete | Packages removed; revisit adapters when needed |
 | 4 | Consolidate shared features under `/features/ui` and update configs | 🔜 Planned | Enables multiple framework apps to share coverage |
 | 5 | Build out cross-framework samples (React w/ MUI, Angular, Vue, Next.js, Qwik) | ⏳ Backlog | Each app consumes shared features and runs via Playwright |

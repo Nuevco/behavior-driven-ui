@@ -108,6 +108,8 @@ pnpm --filter react-sample run test
 That command builds the CLI and runs cucumber using the shared step library plus
 any custom steps the sample adds. It demonstrates how fast teams can start
 writing meaningful scenarios when they don’t have to bootstrap cucumber first.
+The scenarios exercise a real Playwright browser (Chromium) so the driver
+coverage stays honest even in the sample app.
 Future framework demos will use the same pattern.
 
 ## Framework Roadmap

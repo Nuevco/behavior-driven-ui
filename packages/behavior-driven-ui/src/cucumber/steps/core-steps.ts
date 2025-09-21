@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 
-import type { BehaviorDrivenUIConfig } from '../../core/types.js';
+import type { BehaviorDrivenUIConfig, Driver } from '../../core/types.js';
 import { World } from '../../core/world.js';
-import { MockDriver } from '../mock-driver.js';
+import { createDriverForConfig } from '../driver/factory.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type StepDefinitionCode = (...args: any[]) => unknown | Promise<unknown>;
@@ -20,8 +20,14 @@ export interface StepLibraryOptions {
   defaultConfig?: Partial<BehaviorDrivenUIConfig>;
 }
 
+interface TrackingDriver extends Driver {
+  resetHistory(): void;
+  readonly visitedUrls: readonly { url: string; timestamp: number }[];
+}
+
 interface StepWorld extends World {
-  driver: MockDriver;
+  driver: TrackingDriver;
+  ensureTrackingDriver(): Promise<TrackingDriver>;
 }
 
 const DEFAULT_DRIVER_CONFIG = {
@@ -112,16 +118,18 @@ function registerHooks(methods: StepDefinitionMethods): void {
 }
 
 function registerWorldManagementSteps(methods: StepDefinitionMethods): void {
-  methods.Given('a fresh BDUI test world', function (this: StepWorld) {
+  methods.Given('a fresh BDUI test world', async function (this: StepWorld) {
     this.clearData();
-    this.driver.resetHistory();
+    const driver = await this.ensureTrackingDriver();
+    driver.resetHistory();
   } as StepDefinitionCode);
 
   methods.Given(
     'a BDUI world configured with base url {string}',
     async function (this: StepWorld, baseUrl: string) {
       this.config.baseURL = baseUrl;
-      this.driver.resetHistory();
+      const driver = await this.ensureTrackingDriver();
+      driver.resetHistory();
       await this.beforeScenario();
     } as StepDefinitionCode
   );
@@ -129,7 +137,8 @@ function registerWorldManagementSteps(methods: StepDefinitionMethods): void {
   methods.When('I trigger the scenario setup', async function (
     this: StepWorld
   ) {
-    this.driver.resetHistory();
+    const driver = await this.ensureTrackingDriver();
+    driver.resetHistory();
     await this.beforeScenario();
   } as StepDefinitionCode);
 }
@@ -175,6 +184,7 @@ function registerViewportSteps(methods: StepDefinitionMethods): void {
     width: number,
     height: number
   ) {
+    await this.ensureTrackingDriver();
     await this.driver.setViewport(width, height);
   } as StepDefinitionCode);
 
@@ -183,6 +193,7 @@ function registerViewportSteps(methods: StepDefinitionMethods): void {
     width: number,
     height: number
   ) {
+    await this.ensureTrackingDriver();
     const viewport = await this.driver.getViewport();
     assert.deepEqual(viewport, { width, height });
   } as StepDefinitionCode);
@@ -208,14 +219,22 @@ export function registerCoreStepLibrary(
   const defaults = buildDefaultConfig(options);
 
   class BduiCucumberWorld extends World implements StepWorld {
-    declare public readonly driver: MockDriver;
-
     constructor() {
-      const driver = new MockDriver();
+      const config = cloneConfig(defaults);
       super({
-        config: cloneConfig(defaults),
-        driver,
+        config,
+        driverFactory: async () => createDriverForConfig(config),
       });
+    }
+
+    public override get driver(): TrackingDriver {
+      const driver = super.driver;
+      return driver as TrackingDriver;
+    }
+
+    public async ensureTrackingDriver(): Promise<TrackingDriver> {
+      const driver = await this.ensureDriver();
+      return driver as TrackingDriver;
     }
   }
 

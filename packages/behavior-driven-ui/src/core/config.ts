@@ -105,7 +105,7 @@ function validateDriverConfig(
   if (!driver) return;
 
   if (driver.kind !== undefined) {
-    const validKinds = ['playwright', 'webdriver', 'cypress'] as const;
+    const validKinds = ['playwright', 'mock', 'webdriver', 'cypress'] as const;
     if (!validKinds.includes(driver.kind)) {
       throw new ConfigValidationError(
         `driver.kind must be one of: ${validKinds.join(', ')}`,
