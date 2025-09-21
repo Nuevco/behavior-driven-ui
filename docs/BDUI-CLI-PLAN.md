@@ -89,11 +89,11 @@
    - Post-check guardrails.
    - Tests to add: unit test to ensure loader runs once; integration test proving a TS step file can be imported.
 
-8. 🟡 **Implement `bdui run` Command**
+8. 🟢 **Implement `bdui run` Command**
    - Pre-check guardrails.
-   - Change: wire CLI run command to load config, register core steps, load user steps, sanitize cucumber options, and invoke `runBduiFeatures`.
+   - Change: introduced `executeRun` orchestration (config discovery, loader registration, step resolution, env injection, sanitized cucumber options) and registered the `run` subcommand in the CLI entry.
    - Post-check guardrails.
-   - Tests to add: Vitest suite mocking `runBduiFeatures` verifying option merging, enforced defaults, and failure handling.
+   - Tests to add: Vitest suite mocking `runBduiFeatures` verifying option merging, enforced defaults, failure surfacing, and CLI option plumbing.
 
 9. 🔴 **Implement `bdui init` Command**
    - Pre-check guardrails.

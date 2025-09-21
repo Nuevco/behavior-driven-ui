@@ -19,6 +19,11 @@ import type { BehaviorDrivenUIConfig } from '../core/types.js';
 import type { StepDefinitionMethods } from './steps/core-steps.js';
 import { registerCoreStepLibrary } from './steps/core-steps.js';
 
+export interface BduiRunSourceOptions {
+  tagExpression?: string;
+  order?: 'defined' | 'random';
+}
+
 export interface BduiRunOptions {
   cwd?: string;
   features: string[];
@@ -26,6 +31,7 @@ export interface BduiRunOptions {
   runtime?: Partial<IRunOptionsRuntime>;
   formats?: Partial<IRunOptionsFormats>;
   config?: Partial<BehaviorDrivenUIConfig>;
+  sources?: BduiRunSourceOptions;
 }
 
 export type BduiRunResult = IRunResult;
@@ -110,9 +116,15 @@ function createRunOptions(
   options: BduiRunOptions,
   support: ISupportCodeLibrary
 ): IRunOptions {
+  const sourceOverrides = options.sources ?? {};
+
   return {
     sources: {
       ...DEFAULT_SOURCES,
+      ...(sourceOverrides.tagExpression
+        ? { tagExpression: sourceOverrides.tagExpression }
+        : {}),
+      ...(sourceOverrides.order ? { order: sourceOverrides.order } : {}),
       paths: options.features,
     },
     support,

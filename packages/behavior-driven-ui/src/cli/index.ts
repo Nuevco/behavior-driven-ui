@@ -3,11 +3,15 @@ import { fileURLToPath } from 'node:url';
 
 import { Command } from 'commander';
 
+import { registerRunCommand } from './run/command.js';
+
 export {
   resolveStepFiles,
   resolveStepFilesFromConfig,
 } from './steps/resolve-step-files.js';
 export { ensureLoadersRegistered } from './runtime/register-loaders.js';
+export { executeRun } from './run/execute-run.js';
+export { registerRunCommand } from './run/command.js';
 
 /**
  * Placeholder context for future CLI wiring.
@@ -25,6 +29,8 @@ export function createBduiCli(): Command {
     sortSubcommands: true,
     sortOptions: true,
   });
+
+  registerRunCommand(program);
 
   // Placeholder default action: display help for now.
   program.action(() => {
