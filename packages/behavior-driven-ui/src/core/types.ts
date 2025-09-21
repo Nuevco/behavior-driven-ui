@@ -22,7 +22,7 @@ export interface BehaviorDrivenUIConfig {
   /** Driver configuration for browser automation */
   driver?: {
     /** Type of driver to use */
-    kind: 'playwright' | 'mock' | 'webdriver' | 'cypress';
+    kind: 'playwright' | 'mock';
     /** Browser to use (for Playwright) */
     browser?: 'chromium' | 'firefox' | 'webkit';
     /** Whether to run in headless mode */

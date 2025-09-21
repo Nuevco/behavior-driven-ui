@@ -81,6 +81,7 @@ export default {
   features: ['features/**/*.feature'],
   steps: ['bdui/steps/**/*.{ts,js}'],
   driver: {
+    kind: 'playwright',
     browser: 'chromium',
     headless: true,
   },
@@ -96,6 +97,9 @@ export default {
 
 Add custom steps inside `bdui/steps/` – they’ll be loaded alongside the built-in
 library. Feature files stay under `features/`.
+
+- `driver.kind` accepts `playwright` (default) or `mock`. The mock driver is useful
+  for unit tests; the CLI defaults to Playwright for real browser coverage.
 
 ## Example Project
 

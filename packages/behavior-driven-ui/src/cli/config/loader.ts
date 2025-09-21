@@ -31,6 +31,7 @@ const DEFAULT_FEATURE_GLOBS = ['features/**/*.feature'];
 const DEFAULT_STEP_GLOBS = ['bdui/steps/**/*.{ts,js}'];
 const DEFAULT_TAG_EXPRESSION = '';
 const DEFAULT_CUCUMBER_ORDER = 'defined' as const;
+const DEFAULT_DRIVER_KIND = 'playwright' as const;
 const DEFAULT_DRIVER_BROWSER = 'chromium' as const;
 const DEFAULT_DRIVER_HEADLESS = true;
 
@@ -108,6 +109,7 @@ function resolveDriverConfig(
   input: BduiCliConfigDef['driver'] | undefined
 ): BduiResolvedDriverDef {
   return {
+    kind: input?.kind ?? DEFAULT_DRIVER_KIND,
     browser: input?.browser ?? DEFAULT_DRIVER_BROWSER,
     headless: input?.headless ?? DEFAULT_DRIVER_HEADLESS,
   };

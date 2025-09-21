@@ -19,10 +19,12 @@ export const BduiEnvironmentVariablesSchema = z.record(z.string().min(1));
 
 /** Basic driver options most teams toggle when running UI tests locally or in CI. */
 export interface BduiDriverDef {
+  readonly kind?: 'playwright' | 'mock' | undefined;
   readonly browser?: 'chromium' | 'firefox' | 'webkit' | undefined;
   readonly headless?: boolean | undefined;
 }
 export const BduiDriverDefSchema = z.object({
+  kind: z.enum(['playwright', 'mock']).optional(),
   browser: z.enum(['chromium', 'firefox', 'webkit']).optional(),
   headless: z.boolean().optional(),
 });
@@ -79,10 +81,12 @@ export const BduiCliConfigDefSchema = z.object({
 
 /** Resolved driver settings after applying defaults. */
 export interface BduiResolvedDriverDef {
+  readonly kind: 'playwright' | 'mock';
   readonly browser: 'chromium' | 'firefox' | 'webkit';
   readonly headless: boolean;
 }
 export const BduiResolvedDriverDefSchema = z.object({
+  kind: z.enum(['playwright', 'mock']),
   browser: z.enum(['chromium', 'firefox', 'webkit']),
   headless: z.boolean(),
 });

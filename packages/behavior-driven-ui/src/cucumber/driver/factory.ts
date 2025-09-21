@@ -25,7 +25,7 @@ export async function createDriverForConfig(
       return new MockDriver();
     default:
       throw new Error(
-        `Driver kind "${kind}" is not supported yet. Available options: playwright, mock.`
+        `Driver kind "${String(kind)}" is not supported yet. Available options: playwright, mock.`
       );
   }
 }

@@ -48,7 +48,7 @@ function buildBehaviorConfig(
     features: [...resolvedConfig.features],
     steps: [...resolvedConfig.steps],
     driver: {
-      kind: 'playwright',
+      kind: resolvedConfig.driver.kind,
       browser: resolvedConfig.driver.browser,
       headless: resolvedConfig.driver.headless,
     },
