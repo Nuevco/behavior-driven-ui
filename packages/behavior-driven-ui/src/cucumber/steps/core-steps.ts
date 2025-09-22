@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 
+import type { DataTable } from '@cucumber/cucumber';
+
 import type { BehaviorDrivenUIConfig, Driver } from '../../core/types.js';
 import { World } from '../../core/world.js';
 import { createDriverForConfig } from '../driver/factory.js';
@@ -178,6 +180,134 @@ function registerDataSteps(methods: StepDefinitionMethods): void {
   } as StepDefinitionCode);
 }
 
+function registerFormSteps(methods: StepDefinitionMethods): void {
+  methods.When('I fill {string} with {string}', async function (
+    this: StepWorld,
+    selector: string,
+    value: string
+  ) {
+    const driver = await this.ensureTrackingDriver();
+    await driver.fill(selector, value);
+  } as StepDefinitionCode);
+
+  methods.When('I type {string} into {string}', async function (
+    this: StepWorld,
+    text: string,
+    selector: string
+  ) {
+    const driver = await this.ensureTrackingDriver();
+    await driver.type(selector, text);
+  } as StepDefinitionCode);
+
+  methods.When('I click {string}', async function (
+    this: StepWorld,
+    selector: string
+  ) {
+    const driver = await this.ensureTrackingDriver();
+    await driver.click(selector);
+  } as StepDefinitionCode);
+
+  methods.When('I select {string} from {string}', async function (
+    this: StepWorld,
+    option: string,
+    selector: string
+  ) {
+    const driver = await this.ensureTrackingDriver();
+    await driver.select(selector, option);
+  } as StepDefinitionCode);
+
+  methods.When('I select the following options from {string}:', async function (
+    this: StepWorld,
+    selector: string,
+    table: DataTable
+  ) {
+    const driver = await this.ensureTrackingDriver();
+    const values = table
+      .raw()
+      .flat()
+      .map((entry) => entry.trim());
+    await driver.select(selector, values);
+  } as StepDefinitionCode);
+}
+
+function registerAssertionSteps(methods: StepDefinitionMethods): void {
+  methods.Then('the value of {string} should be {string}', async function (
+    this: StepWorld,
+    selector: string,
+    expectedValue: string
+  ) {
+    const driver = await this.ensureTrackingDriver();
+    await driver.expect(
+      selector,
+      `to have value ${JSON.stringify(expectedValue)}`
+    );
+  } as StepDefinitionCode);
+
+  methods.Then('the values of {string} should be:', async function (
+    this: StepWorld,
+    selector: string,
+    table: DataTable
+  ) {
+    const driver = await this.ensureTrackingDriver();
+    const values = table
+      .raw()
+      .flat()
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0);
+    const actual = await driver.getValue(selector);
+    const actualValues = actual
+      .split(',')
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0);
+
+    assert.deepEqual(
+      actualValues,
+      values,
+      `Expected selected values for "${selector}" to equal ${JSON.stringify(values)}, received ${JSON.stringify(actualValues)}`
+    );
+  } as StepDefinitionCode);
+
+  methods.Then('the text of {string} should be {string}', async function (
+    this: StepWorld,
+    selector: string,
+    expectedText: string
+  ) {
+    const driver = await this.ensureTrackingDriver();
+    await driver.expect(
+      selector,
+      `to have text ${JSON.stringify(expectedText)}`
+    );
+  } as StepDefinitionCode);
+
+  methods.Then('{string} should contain text {string}', async function (
+    this: StepWorld,
+    selector: string,
+    expectedText: string
+  ) {
+    const driver = await this.ensureTrackingDriver();
+    await driver.expect(
+      selector,
+      `to contain text ${JSON.stringify(expectedText)}`
+    );
+  } as StepDefinitionCode);
+
+  methods.Then('{string} should be visible', async function (
+    this: StepWorld,
+    selector: string
+  ) {
+    const driver = await this.ensureTrackingDriver();
+    await driver.expect(selector, 'to be visible');
+  } as StepDefinitionCode);
+
+  methods.Then('{string} should be hidden', async function (
+    this: StepWorld,
+    selector: string
+  ) {
+    const driver = await this.ensureTrackingDriver();
+    await driver.expect(selector, 'to be hidden');
+  } as StepDefinitionCode);
+}
+
 function registerViewportSteps(methods: StepDefinitionMethods): void {
   methods.When('I set the viewport to {int} by {int}', async function (
     this: StepWorld,
@@ -244,6 +374,8 @@ export function registerCoreStepLibrary(
   registerHooks(methods);
   registerWorldManagementSteps(methods);
   registerDataSteps(methods);
+  registerFormSteps(methods);
+  registerAssertionSteps(methods);
   registerViewportSteps(methods);
   registerNavigationSteps(methods);
 }

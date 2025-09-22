@@ -30,8 +30,9 @@ BDUI’s world and step definitions cover the 80% UI automation cases:
 
 - Navigation and page load helpers
 - Viewport management
-- Input interactions (click, fill, select, scroll)
+- Input interactions (click, fill, type, select, multi-select, checkboxes)
 - Assertion helpers around stored state
+- Visibility waits and lightweight text/value assertions
 - Hooks for scenario setup/teardown
 
 These steps live inside the published package and are always registered before
@@ -112,20 +113,21 @@ pnpm --filter react-sample run test
 ```
 
 That command builds the CLI and runs cucumber using the shared step library plus
-any custom steps the sample adds. It demonstrates how fast teams can start
-writing meaningful scenarios when they don’t have to bootstrap cucumber first.
-The scenarios exercise a real Playwright browser (Chromium) so the driver
-coverage stays honest even in the sample app.
+any custom steps the sample adds. The shared feature corpus exercises world
+lifecycle resets, viewport sizing, form interactions (inputs, selects,
+checkboxes), and visibility waits. Scenarios run in a real Playwright browser
+(Chromium) so the driver coverage stays honest even in the sample app.
 Future framework demos will use the same pattern.
 
 ## Framework Roadmap
+
 - **Bootstrap targets**: React (with MUI), Angular, Vue, Next.js, Qwik — each
   will receive a `<framework>-sample` app consuming the shared feature corpus and
   running through Playwright.
 - **Round two**: Svelte, SvelteKit, and Vue SSR/Nuxt once the initial matrix is
   stable.
-The shared BDUI step library must remain DOM/Playwright-centric so the same
-scenarios pass across all frameworks.
+  The shared BDUI step library must remain DOM/Playwright-centric so the same
+  scenarios pass across all frameworks.
 
 ## Troubleshooting Tips
 

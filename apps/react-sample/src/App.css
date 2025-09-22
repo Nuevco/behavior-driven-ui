@@ -30,14 +30,94 @@ body {
 }
 
 .App__main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
+  display: grid;
+  gap: 2rem;
+  width: min(960px, 100%);
+  margin: 0 auto;
 }
 
 .App__highlight {
   font-weight: 600;
+}
+
+.App__section {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 20px 45px rgba(28, 54, 85, 0.1);
+  display: grid;
+  gap: 1.25rem;
+}
+
+.App__form {
+  display: grid;
+  gap: 1rem;
+}
+
+.App__form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.App__form input,
+.App__form textarea,
+.App__form select {
+  font: inherit;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(17, 24, 39, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.App__form textarea {
+  resize: vertical;
+  min-height: 6rem;
+}
+
+.App__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.App__summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.App__summary div {
+  background: rgba(0, 216, 255, 0.08);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+}
+
+.App__summary dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #4a5568;
+  margin-bottom: 0.25rem;
+}
+
+.App__summary dd {
+  margin: 0;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.App__visibilityPanel {
+  border: 1px dashed rgba(0, 216, 255, 0.6);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: rgba(0, 216, 255, 0.12);
+  color: #1f2937;
 }
 
 button {

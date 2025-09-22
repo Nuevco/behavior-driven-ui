@@ -1,1 +1,0 @@
-codex --sandbox danger-full-access -a on-failure -c shell_environment_policy.inherit='"all"'
