@@ -31,7 +31,7 @@ export class ServerManager {
   constructor(options: ServerManagerOptions) {
     this.config = options.config;
     // Use shorter timeout in CI environments to prevent hanging
-    this.timeout = options.timeout ?? (process.env.CI ? 15_000 : 30_000);
+    this.timeout = options.timeout ?? 30_000;
   }
 
   /**
