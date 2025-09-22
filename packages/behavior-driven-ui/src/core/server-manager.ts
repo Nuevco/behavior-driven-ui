@@ -62,7 +62,8 @@ export class ServerManager {
         ...process.env,
         NODE_ENV: 'development',
       },
-      detached: false,
+      // In CI, detach process to create new process group for easier cleanup
+      detached: Boolean(process.env.CI),
     });
 
     // eslint-disable-next-line no-console
@@ -99,8 +100,27 @@ export class ServerManager {
       return;
     }
 
+    const pid = this.serverProcess.pid;
+
     // Try graceful shutdown first
     this.serverProcess.kill('SIGTERM');
+
+    // In CI environments, also kill the entire process tree to ensure child processes are terminated
+    if (process.env.CI && pid) {
+      try {
+        // Kill the entire process tree using process group
+        process.kill(-pid, 'SIGTERM');
+        // eslint-disable-next-line no-console
+        console.log(
+          `[server-manager] Killed process tree for PID ${pid} in CI environment`
+        );
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[server-manager] Failed to kill process tree: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+    }
 
     // Wait for graceful exit with timeout
     const gracefulExitPromise = new Promise<void>((resolve) => {
@@ -115,6 +135,19 @@ export class ServerManager {
       setTimeout(() => {
         if (this.serverProcess && this.serverProcess.exitCode === null) {
           this.serverProcess.kill('SIGKILL');
+
+          // In CI, also force kill the entire process tree
+          if (process.env.CI && pid) {
+            try {
+              process.kill(-pid, 'SIGKILL');
+              // eslint-disable-next-line no-console
+              console.log(
+                `[server-manager] Force killed process tree for PID ${pid} in CI environment`
+              );
+            } catch {
+              // Ignore errors on force kill
+            }
+          }
         }
         resolve();
       }, 2_000);
@@ -125,6 +158,19 @@ export class ServerManager {
     // Final cleanup with timeout
     if (this.serverProcess && this.serverProcess.exitCode === null) {
       this.serverProcess.kill('SIGKILL');
+
+      // In CI, also force kill the entire process tree as final cleanup
+      if (process.env.CI && pid) {
+        try {
+          process.kill(-pid, 'SIGKILL');
+          // eslint-disable-next-line no-console
+          console.log(
+            `[server-manager] Final force killed process tree for PID ${pid} in CI environment`
+          );
+        } catch {
+          // Ignore errors on force kill
+        }
+      }
 
       // Wait for force kill with timeout
       await new Promise<void>((resolve) => {

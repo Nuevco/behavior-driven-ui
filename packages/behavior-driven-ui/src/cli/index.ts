@@ -58,6 +58,15 @@ export function createBduiCli(): Command {
  * The default mirrors Node.js process arguments, enabling a call-site entry point later.
  */
 export async function runBduiCli(argv?: string[]): Promise<void> {
+  // Log environment detection early for debugging
+  if (globalThis.process?.env?.CI) {
+    globalThis.console?.log(
+      '[bdui] CI environment detected - enhanced process cleanup enabled'
+    );
+  } else {
+    globalThis.console?.log('[bdui] Running in dev mode - standard cleanup');
+  }
+
   const cli = createBduiCli();
   const args = argv ?? globalThis.process?.argv ?? [];
   await cli.parseAsync(args);

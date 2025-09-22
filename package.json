@@ -46,6 +46,7 @@
     "esm-app:test": "pnpm --filter esm-app test",
     "cjs-app:build": "pnpm --filter cjs-app build",
     "cjs-app:test": "pnpm --filter cjs-app test",
+    "react-sample:test": "pnpm --filter react-sample test",
     "test:apps": "pnpm esm-app:test && pnpm cjs-app:test",
     "packages:build": "pnpm bdui:build && pnpm free-paths:build",
     "packages:test": "turbo run test --filter='./packages/*'",

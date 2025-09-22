@@ -151,6 +151,18 @@ async function executeRunCore(
     if (serverManager) {
       await serverManager.stop();
     }
+
+    // In CI environments, force exit after cleanup to prevent hanging
+    if (process.env.CI) {
+      // Give a brief moment for any remaining cleanup, then force exit
+      setTimeout(() => {
+        // eslint-disable-next-line no-console
+        console.log(
+          '[bdui] CI environment detected - forcing exit after cleanup'
+        );
+        process.exit(process.exitCode ?? 0);
+      }, 1000);
+    }
   }
 }
 
