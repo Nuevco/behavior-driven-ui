@@ -50,6 +50,11 @@ export class ServerManager {
       throw new Error('Invalid command: empty command string');
     }
 
+    // eslint-disable-next-line no-console
+    console.log(`[server-manager] Spawning server: ${cmd} ${args.join(' ')}`);
+    // eslint-disable-next-line no-console
+    console.log(`[server-manager] Working directory: ${process.cwd()}`);
+
     this.serverProcess = spawn(cmd, args, {
       cwd: process.cwd(),
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -59,6 +64,9 @@ export class ServerManager {
       },
       detached: false,
     });
+
+    // eslint-disable-next-line no-console
+    console.log(`[server-manager] Server process spawned with PID: ${this.serverProcess.pid}`);
 
     this.setupServerOutputParsing();
     this.setupErrorHandling();
@@ -151,6 +159,10 @@ export class ServerManager {
     this.serverProcess.stdout?.on('data', (data: Buffer) => {
       const output = data.toString();
 
+      // Log all output chunks to see what we're getting
+      // eslint-disable-next-line no-console
+      console.log(`[server-manager] STDOUT: ${JSON.stringify(output)}`);
+
       // Only write to stdout if not in CI environment to avoid hanging
       if (!process.env.CI) {
         process.stdout.write(output);
@@ -163,17 +175,24 @@ export class ServerManager {
         this.serverReady = true;
         // eslint-disable-next-line no-console
         console.log(
-          `[server-manager] Detected server URL: ${this.actualServerUrl}`
+          `[server-manager] SUCCESS: Detected server URL: ${this.actualServerUrl}`
         );
       }
     });
 
     this.serverProcess.stderr?.on('data', (data: Buffer) => {
+      const output = data.toString();
+
+      // Log stderr too in case errors are there
+      // eslint-disable-next-line no-console
+      console.log(`[server-manager] STDERR: ${JSON.stringify(output)}`);
+
       // Only write to stderr if not in CI environment to avoid hanging
       if (!process.env.CI) {
         process.stderr.write(data);
       }
     });
+
 
     // Handle broken pipes and errors on stdout/stderr
     this.serverProcess.stdout?.on('error', (err: NodeError) => {
