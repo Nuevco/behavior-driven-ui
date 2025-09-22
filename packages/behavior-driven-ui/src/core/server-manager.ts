@@ -66,7 +66,9 @@ export class ServerManager {
     });
 
     // eslint-disable-next-line no-console
-    console.log(`[server-manager] Server process spawned with PID: ${this.serverProcess.pid}`);
+    console.log(
+      `[server-manager] Server process spawned with PID: ${this.serverProcess.pid}`
+    );
 
     this.setupServerOutputParsing();
     this.setupErrorHandling();
@@ -192,7 +194,6 @@ export class ServerManager {
         process.stderr.write(data);
       }
     });
-
 
     // Handle broken pipes and errors on stdout/stderr
     this.serverProcess.stdout?.on('error', (err: NodeError) => {
