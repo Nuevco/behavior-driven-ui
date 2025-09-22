@@ -25,6 +25,21 @@ const runBduiFeaturesMock = vi.hoisted(() =>
   vi.fn<[BduiRunOptions], Promise<BduiRunResult>>()
 );
 
+const serverManagerMock = vi.hoisted(() => {
+  return vi.fn().mockImplementation(() => ({
+    setupSignalHandlers: vi.fn(),
+    start: vi.fn().mockResolvedValue({
+      url: 'http://localhost:4000',
+      process: { exitCode: null },
+    }),
+    stop: vi.fn().mockResolvedValue(undefined),
+  }));
+});
+
+vi.mock('../../src/core/server-manager.js', () => ({
+  ServerManager: serverManagerMock,
+}));
+
 vi.mock('../../src/cli/config/loader.js', () => ({
   loadBduiConfig: loadBduiConfigMock,
 }));
@@ -50,6 +65,15 @@ describe('bdui run command', () => {
     ensureLoadersRegisteredMock.mockReset();
     resolveStepFilesFromConfigMock.mockReset();
     runBduiFeaturesMock.mockReset();
+    serverManagerMock.mockReset();
+    serverManagerMock.mockImplementation(() => ({
+      setupSignalHandlers: vi.fn(),
+      start: vi.fn().mockResolvedValue({
+        url: 'http://localhost:4000',
+        process: { exitCode: null },
+      }),
+      stop: vi.fn().mockResolvedValue(undefined),
+    }));
     originalNodeEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = 'development';
     process.exitCode = undefined;

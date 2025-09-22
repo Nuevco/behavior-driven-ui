@@ -1,9 +1,10 @@
-/* global process */
+/* global process, console */
 import path from 'node:path';
 
 import { runBduiFeatures } from '../../cucumber/index.js';
 import type { BduiRunOptions } from '../../cucumber/index.js';
 import type { BehaviorDrivenUIConfig } from '../../core/types.js';
+import { ServerManager } from '../../core/server-manager.js';
 import { loadBduiConfig } from '../config/loader.js';
 import type {
   LoadBduiConfigOptions,
@@ -117,7 +118,26 @@ export async function executeRun(
     configResult.resolvedConfig.environment
   );
 
+  let serverManager: ServerManager | null = null;
+
   try {
+    // Start development server if configured
+    if (configResult.resolvedConfig.webServer) {
+      const behaviorConfig = buildBehaviorConfig(configResult.resolvedConfig);
+      serverManager = new ServerManager({
+        config: behaviorConfig as BehaviorDrivenUIConfig,
+      });
+      serverManager.setupSignalHandlers();
+
+      const serverInfo = await serverManager.start();
+      // eslint-disable-next-line no-console
+      console.log(`[bdui] Development server started at ${serverInfo.url}`);
+
+      // Update the base URL to use the actual server URL
+      if (behaviorConfig.webServer && !configResult.resolvedConfig.baseURL) {
+        behaviorConfig.baseURL = serverInfo.url;
+      }
+    }
     const supportCoordinates = stepFiles.length
       ? { importPaths: stepFiles }
       : undefined;
@@ -149,5 +169,10 @@ export async function executeRun(
     };
   } finally {
     cleanupEnvironment();
+
+    // Stop the development server if it was started
+    if (serverManager) {
+      await serverManager.stop();
+    }
   }
 }

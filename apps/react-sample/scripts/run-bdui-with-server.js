@@ -1,8 +1,21 @@
 import { spawn } from 'node:child_process';
 import process from 'node:process';
+import { pathToFileURL } from 'node:url';
+import path from 'node:path';
 
-const SERVER_URL = 'http://127.0.0.1:4173';
 const pnpmCommand = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
+
+// Load BDUI configuration
+async function loadBduiConfig() {
+  const configPath = path.resolve(process.cwd(), 'bdui.config.ts');
+  try {
+    // Use dynamic import with file URL for .ts files
+    const configModule = await import(pathToFileURL(configPath).href);
+    return configModule.default;
+  } catch (error) {
+    throw new Error(`Failed to load bdui.config.ts: ${error.message}`);
+  }
+}
 
 async function waitForServer(url, timeoutMs = 30_000) {
   const start = Date.now();
@@ -33,18 +46,47 @@ async function waitForServer(url, timeoutMs = 30_000) {
 }
 
 async function run() {
-  const server = spawn(
-    pnpmCommand,
-    ['run', 'dev', '--host=127.0.0.1', '--port=4173'],
-    {
-      cwd: process.cwd(),
-      stdio: 'inherit',
-      env: {
-        ...process.env,
-        NODE_ENV: 'development',
-      },
+  // Load configuration
+  const config = await loadBduiConfig();
+  const webServerConfig = config.webServer;
+
+  if (!webServerConfig?.command) {
+    throw new Error('No webServer.command found in bdui.config.ts');
+  }
+
+  // Parse the command to extract arguments
+  const commandParts = webServerConfig.command.split(/\s+/);
+  const [cmd, ...args] = commandParts;
+
+  let actualServerUrl = null;
+  let serverReady = false;
+
+  const server = spawn(cmd, args, {
+    cwd: process.cwd(),
+    stdio: ['pipe', 'pipe', 'pipe'],
+    env: {
+      ...process.env,
+      NODE_ENV: 'development',
+    },
+  });
+
+  // Parse Vite output to get actual server URL
+  server.stdout.on('data', (data) => {
+    const output = data.toString();
+    process.stdout.write(output);
+
+    // Look for Vite's "Local:" output to get the actual URL
+    const localMatch = output.match(/➜\s+Local:\s+(https?:\/\/[^\s]+)/);
+    if (localMatch) {
+      actualServerUrl = localMatch[1];
+      serverReady = true;
+      console.log(`[dev-server] Detected actual server URL: ${actualServerUrl}`);
     }
-  );
+  });
+
+  server.stderr.on('data', (data) => {
+    process.stderr.write(data);
+  });
 
   const terminateServer = async () => {
     if (server.exitCode === null) {
@@ -70,8 +112,24 @@ async function run() {
     process.exit(1);
   });
 
+  // Wait for Vite to output its ready message with actual URL
+  const waitForViteReady = async (timeoutMs = 30_000) => {
+    const start = Date.now();
+
+    while (!serverReady && Date.now() - start < timeoutMs) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+
+    if (!serverReady || !actualServerUrl) {
+      throw new Error('Vite did not report ready status with server URL within timeout');
+    }
+  };
+
   try {
-    await waitForServer(SERVER_URL);
+    await waitForViteReady();
+    // Give Vite a moment to fully bind to the port after reporting ready
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    await waitForServer(actualServerUrl);
   } catch (error) {
     await terminateServer();
     console.error(error instanceof Error ? error.message : error);
