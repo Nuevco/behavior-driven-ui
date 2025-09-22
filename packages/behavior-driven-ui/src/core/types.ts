@@ -2,6 +2,28 @@
  * Core type definitions for behavior-driven-ui
  */
 
+export interface MocksDef {
+  /** Directory containing fixture files */
+  fixturesDir: string;
+  /** Mocking strategy */
+  strategy: 'playwright' | 'msw';
+}
+
+export interface BreakpointsDef {
+  /** Source of breakpoint definitions */
+  source: 'mui' | 'tailwind' | 'override';
+  /** Path to MUI theme file (if using MUI) */
+  muiThemePath?: string;
+  /** Path to Tailwind config file (if using Tailwind) */
+  tailwindConfigPath?: string;
+  /** Custom breakpoint overrides */
+  override?: Record<string, number>;
+  /** Default viewport height */
+  defaultHeight?: number;
+}
+
+export type TagsDef = Record<string, Partial<BehaviorDrivenUIConfig>>;
+
 /**
  * Configuration for the behavior-driven-ui framework
  */
@@ -36,29 +58,13 @@ export interface BehaviorDrivenUIConfig {
   steps: string[];
 
   /** Breakpoint configuration for responsive testing */
-  breakpoints?: {
-    /** Source of breakpoint definitions */
-    source: 'mui' | 'tailwind' | 'override';
-    /** Path to MUI theme file (if using MUI) */
-    muiThemePath?: string;
-    /** Path to Tailwind config file (if using Tailwind) */
-    tailwindConfigPath?: string;
-    /** Custom breakpoint overrides */
-    override?: Record<string, number>;
-    /** Default viewport height */
-    defaultHeight?: number;
-  };
+  breakpoints?: BreakpointsDef;
 
   /** Mock configuration */
-  mocks?: {
-    /** Directory containing fixture files */
-    fixturesDir: string;
-    /** Mocking strategy */
-    strategy: 'playwright' | 'msw';
-  };
+  mocks?: MocksDef;
 
   /** Tag-based configuration overrides */
-  tags?: Record<string, Partial<BehaviorDrivenUIConfig>>;
+  tags?: TagsDef;
 }
 
 /**

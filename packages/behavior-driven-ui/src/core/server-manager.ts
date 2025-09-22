@@ -2,14 +2,13 @@
 import type { ChildProcess } from 'node:child_process';
 import { spawn } from 'node:child_process';
 
-import type { BehaviorDrivenUIConfig } from './types.js';
+import { globalConfigManager } from './config-manager.js';
 
 interface NodeError extends Error {
   code?: string;
 }
 
 export interface ServerManagerOptions {
-  config: BehaviorDrivenUIConfig;
   timeout?: number;
 }
 
@@ -22,14 +21,12 @@ export interface ServerInfo {
  * Manages development server startup and health checking
  */
 export class ServerManager {
-  private readonly config: BehaviorDrivenUIConfig;
   private readonly timeout: number;
   private serverProcess: ChildProcess | null = null;
   private actualServerUrl: string | null = null;
   private serverReady = false;
 
-  constructor(options: ServerManagerOptions) {
-    this.config = options.config;
+  constructor(options: ServerManagerOptions = {}) {
     // Use shorter timeout in CI environments to prevent hanging
     this.timeout = options.timeout ?? 30_000;
   }
@@ -38,12 +35,15 @@ export class ServerManager {
    * Start the development server and wait for it to be ready
    */
   async start(): Promise<ServerInfo> {
-    if (!this.config.webServer?.command) {
+    if (!globalConfigManager.getConfig().webServer?.command) {
       throw new Error('No webServer.command found in configuration');
     }
 
-    const { command } = this.config.webServer;
-    const commandParts = command.split(/\s+/);
+    const webServer = globalConfigManager.getConfig().webServer;
+    if (!webServer) {
+      throw new Error('WebServer configuration is missing');
+    }
+    const commandParts = webServer.command.split(/\s+/);
     const [cmd, ...args] = commandParts;
 
     if (!cmd) {
@@ -182,6 +182,14 @@ export class ServerManager {
       if (localMatch?.[1]) {
         this.actualServerUrl = localMatch[1];
         this.serverReady = true;
+
+        // Update ConfigManager with detected server info
+        const url = new URL(this.actualServerUrl);
+        globalConfigManager.updateServerInfo({
+          url: this.actualServerUrl,
+          port: parseInt(url.port, 10),
+        });
+
         // eslint-disable-next-line no-console
         console.log(
           `[server-manager] SUCCESS: Detected server URL: ${this.actualServerUrl}`

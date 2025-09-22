@@ -251,7 +251,7 @@ function validateMocksConfig(mocks: BehaviorDrivenUIConfig['mocks']): void {
 /**
  * Validates the complete configuration object
  */
-function validateConfig(config: BehaviorDrivenUIConfig): void {
+export function validateConfig(config: BehaviorDrivenUIConfig): void {
   // Validate required fields
   if (!config.baseURL || typeof config.baseURL !== 'string') {
     throw new ConfigValidationError(

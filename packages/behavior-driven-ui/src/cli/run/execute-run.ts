@@ -3,9 +3,8 @@ import path from 'node:path';
 
 import { runBduiFeatures } from '../../cucumber/index.js';
 import type { BduiRunOptions } from '../../cucumber/index.js';
-import type { BehaviorDrivenUIConfig } from '../../core/types.js';
 import { ServerManager } from '../../core/server-manager.js';
-import { loadBduiConfig } from '../config/loader.js';
+import { globalConfigManager } from '../../core/config-manager.js';
 import type {
   LoadBduiConfigOptions,
   LoadBduiConfigResult,
@@ -39,31 +38,6 @@ function resolveConfigOverride(
   }
 
   return path.resolve(cwd, overridePath);
-}
-
-function buildBehaviorConfig(
-  resolvedConfig: LoadBduiConfigResult['resolvedConfig']
-): Partial<BehaviorDrivenUIConfig> {
-  const baseConfig: Partial<BehaviorDrivenUIConfig> = {
-    baseURL: resolvedConfig.baseURL,
-    features: [...resolvedConfig.features],
-    steps: [...resolvedConfig.steps],
-    driver: {
-      kind: resolvedConfig.driver.kind,
-      browser: resolvedConfig.driver.browser,
-      headless: resolvedConfig.driver.headless,
-    },
-  };
-
-  if (resolvedConfig.webServer) {
-    const { reuseExistingServer, ...rest } = resolvedConfig.webServer;
-    baseConfig.webServer = {
-      ...rest,
-      ...(reuseExistingServer !== undefined ? { reuseExistingServer } : {}),
-    };
-  }
-
-  return baseConfig;
 }
 
 function applyEnvironment(
@@ -107,52 +81,51 @@ async function executeRunCore(
 
   await ensureLoadersRegistered();
 
-  const configResult = await loadBduiConfig(loaderOptions);
+  await globalConfigManager.loadConfig(loaderOptions);
 
   const stepFiles = await resolveStepFilesFromConfig(
-    configResult.resolvedConfig.projectRoot,
-    configResult.resolvedConfig.steps
+    globalConfigManager.getLoadedConfigResult().resolvedConfig.projectRoot,
+    globalConfigManager.getLoadedConfigResult().resolvedConfig.steps
   );
 
   const cleanupEnvironment = applyEnvironment(
-    configResult.resolvedConfig.environment
+    globalConfigManager.getLoadedConfigResult().resolvedConfig.environment
   );
 
   let serverManager: ServerManager | null = null;
 
   try {
     // Start development server if configured
-    if (configResult.resolvedConfig.webServer) {
-      const behaviorConfig = buildBehaviorConfig(configResult.resolvedConfig);
-      serverManager = new ServerManager({
-        config: behaviorConfig as BehaviorDrivenUIConfig,
-      });
+    if (globalConfigManager.getConfig().webServer) {
+      serverManager = new ServerManager();
       serverManager.setupSignalHandlers();
 
       const serverInfo = await serverManager.start();
       // eslint-disable-next-line no-console
       console.log(`[bdui] Development server started at ${serverInfo.url}`);
-
-      // Update the base URL to use the actual detected server URL
-      if (behaviorConfig.webServer) {
-        behaviorConfig.baseURL = serverInfo.url;
-        // eslint-disable-next-line no-console
-        console.log(
-          `[bdui] Updated baseURL to detected server: ${serverInfo.url}`
-        );
-      }
+      // eslint-disable-next-line no-console
+      console.log(
+        `[bdui] ConfigManager updated with detected server: ${serverInfo.url}`
+      );
     }
     const supportCoordinates = stepFiles.length
       ? { importPaths: stepFiles }
       : undefined;
 
     const runOptions: BduiRunOptions = {
-      cwd: configResult.resolvedConfig.projectRoot,
-      features: [...configResult.resolvedConfig.features],
-      config: buildBehaviorConfig(configResult.resolvedConfig),
+      cwd: globalConfigManager.getLoadedConfigResult().resolvedConfig
+        .projectRoot,
+      features: [
+        ...globalConfigManager.getLoadedConfigResult().resolvedConfig.features,
+      ],
+      config: globalConfigManager.getConfig(),
       sources: {
-        tagExpression: configResult.resolvedConfig.cucumber.tagExpression,
-        order: configResult.resolvedConfig.cucumber.order,
+        tagExpression:
+          globalConfigManager.getLoadedConfigResult().resolvedConfig.cucumber
+            .tagExpression,
+        order:
+          globalConfigManager.getLoadedConfigResult().resolvedConfig.cucumber
+            .order,
       },
     };
 
@@ -167,7 +140,7 @@ async function executeRunCore(
     }
 
     return {
-      config: configResult,
+      config: globalConfigManager.getLoadedConfigResult(),
       stepFiles,
       runResult,
     };
