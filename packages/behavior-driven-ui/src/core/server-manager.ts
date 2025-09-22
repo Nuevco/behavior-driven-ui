@@ -161,9 +161,13 @@ export class ServerManager {
     this.serverProcess.stdout?.on('data', (data: Buffer) => {
       const output = data.toString();
 
-      // Log all output chunks to see what we're getting
+      // Log all output chunks to see what we're getting (clean for readability)
+      // eslint-disable-next-line no-control-regex
+      const cleanForLogging = output.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '');
       // eslint-disable-next-line no-console
-      console.log(`[server-manager] STDOUT: ${JSON.stringify(output)}`);
+      console.log(
+        `[server-manager] STDOUT: ${JSON.stringify(cleanForLogging)}`
+      );
 
       // Only write to stdout if not in CI environment to avoid hanging
       if (!process.env.CI) {

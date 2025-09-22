@@ -133,9 +133,13 @@ async function executeRunCore(
       // eslint-disable-next-line no-console
       console.log(`[bdui] Development server started at ${serverInfo.url}`);
 
-      // Update the base URL to use the actual server URL
-      if (behaviorConfig.webServer && !configResult.resolvedConfig.baseURL) {
+      // Update the base URL to use the actual detected server URL
+      if (behaviorConfig.webServer) {
         behaviorConfig.baseURL = serverInfo.url;
+        // eslint-disable-next-line no-console
+        console.log(
+          `[bdui] Updated baseURL to detected server: ${serverInfo.url}`
+        );
       }
     }
     const supportCoordinates = stepFiles.length
