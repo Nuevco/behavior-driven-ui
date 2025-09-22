@@ -1,8 +1,12 @@
-/* global process, setTimeout, console, fetch, Buffer */
+/* global process, setTimeout, console, fetch, Buffer, clearTimeout */
 import type { ChildProcess } from 'node:child_process';
 import { spawn } from 'node:child_process';
 
 import type { BehaviorDrivenUIConfig } from './types.js';
+
+interface NodeError extends Error {
+  code?: string;
+}
 
 export interface ServerManagerOptions {
   config: BehaviorDrivenUIConfig;
@@ -26,7 +30,8 @@ export class ServerManager {
 
   constructor(options: ServerManagerOptions) {
     this.config = options.config;
-    this.timeout = options.timeout ?? 30_000;
+    // Use shorter timeout in CI environments to prevent hanging
+    this.timeout = options.timeout ?? (process.env.CI ? 15_000 : 30_000);
   }
 
   /**
@@ -47,11 +52,12 @@ export class ServerManager {
 
     this.serverProcess = spawn(cmd, args, {
       cwd: process.cwd(),
-      stdio: ['pipe', 'pipe', 'pipe'],
+      stdio: ['ignore', 'pipe', 'pipe'],
       env: {
         ...process.env,
         NODE_ENV: 'development',
       },
+      detached: false,
     });
 
     this.setupServerOutputParsing();
@@ -83,11 +89,41 @@ export class ServerManager {
       return;
     }
 
+    // Try graceful shutdown first
     this.serverProcess.kill('SIGTERM');
-    await new Promise((resolve) => setTimeout(resolve, 1_000));
 
-    if (this.serverProcess.exitCode === null) {
+    // Wait for graceful exit with timeout
+    const gracefulExitPromise = new Promise<void>((resolve) => {
+      if (!this.serverProcess) {
+        resolve();
+        return;
+      }
+
+      this.serverProcess.once('exit', () => resolve());
+
+      // Fallback timeout for graceful shutdown
+      setTimeout(() => {
+        if (this.serverProcess && this.serverProcess.exitCode === null) {
+          this.serverProcess.kill('SIGKILL');
+        }
+        resolve();
+      }, 2_000);
+    });
+
+    await gracefulExitPromise;
+
+    // Final cleanup with timeout
+    if (this.serverProcess && this.serverProcess.exitCode === null) {
       this.serverProcess.kill('SIGKILL');
+
+      // Wait for force kill with timeout
+      await new Promise<void>((resolve) => {
+        const forceTimeout = setTimeout(() => resolve(), 1_000);
+        this.serverProcess?.once('exit', () => {
+          clearTimeout(forceTimeout);
+          resolve();
+        });
+      });
     }
 
     this.serverProcess = null;
@@ -100,13 +136,9 @@ export class ServerManager {
    */
   setupSignalHandlers(): void {
     const terminate = (): void => {
-      this.stop()
-        .then(() => {
-          process.exit(1);
-        })
-        .catch((_err) => {
-          process.exit(1);
-        });
+      this.stop().catch((_err) => {
+        // Log error but don't exit - let the main process handle exit
+      });
     };
 
     process.once('SIGINT', terminate);
@@ -118,7 +150,11 @@ export class ServerManager {
 
     this.serverProcess.stdout?.on('data', (data: Buffer) => {
       const output = data.toString();
-      process.stdout.write(output);
+
+      // Only write to stdout if not in CI environment to avoid hanging
+      if (!process.env.CI) {
+        process.stdout.write(output);
+      }
 
       // Parse Vite output to extract actual server URL
       const localMatch = output.match(/➜\s+Local:\s+(https?:\/\/[^\s]+)/);
@@ -133,7 +169,27 @@ export class ServerManager {
     });
 
     this.serverProcess.stderr?.on('data', (data: Buffer) => {
-      process.stderr.write(data);
+      // Only write to stderr if not in CI environment to avoid hanging
+      if (!process.env.CI) {
+        process.stderr.write(data);
+      }
+    });
+
+    // Handle broken pipes and errors on stdout/stderr
+    this.serverProcess.stdout?.on('error', (err: NodeError) => {
+      // Ignore EPIPE errors which are common in CI
+      if (err.code !== 'EPIPE') {
+        // eslint-disable-next-line no-console
+        console.warn('[server-manager] stdout error:', err.message);
+      }
+    });
+
+    this.serverProcess.stderr?.on('error', (err: NodeError) => {
+      // Ignore EPIPE errors which are common in CI
+      if (err.code !== 'EPIPE') {
+        // eslint-disable-next-line no-console
+        console.warn('[server-manager] stderr error:', err.message);
+      }
     });
   }
 

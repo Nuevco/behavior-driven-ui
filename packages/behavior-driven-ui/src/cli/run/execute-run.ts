@@ -1,4 +1,4 @@
-/* global process, console */
+/* global process, console, setTimeout, clearTimeout */
 import path from 'node:path';
 
 import { runBduiFeatures } from '../../cucumber/index.js';
@@ -95,7 +95,7 @@ function applyEnvironment(
   };
 }
 
-export async function executeRun(
+async function executeRunCore(
   options: ExecuteRunOptions = {}
 ): Promise<ExecuteRunResult> {
   const cwd = options.cwd ?? process.cwd();
@@ -173,6 +173,55 @@ export async function executeRun(
     // Stop the development server if it was started
     if (serverManager) {
       await serverManager.stop();
+    }
+  }
+}
+
+/**
+ * Execute BDUI run with hard timeout to prevent CI hanging
+ */
+export async function executeRun(
+  options: ExecuteRunOptions = {}
+): Promise<ExecuteRunResult> {
+  const timeoutMs = 15 * 60 * 1000; // 15 minutes default timeout
+
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  let isTimedOut = false;
+
+  try {
+    // Race between execution and timeout
+    const result = await Promise.race([
+      executeRunCore(options),
+      new Promise<never>((_resolve, reject) => {
+        timeoutId = setTimeout(() => {
+          isTimedOut = true;
+          // eslint-disable-next-line no-console
+          console.error(
+            `[bdui] HARD TIMEOUT: Process exceeded ${timeoutMs / 1000}s limit. Forcing exit.`
+          );
+
+          // Set exit code and reject instead of hard exit
+          process.exitCode = 1;
+          reject(new Error(`Execution timeout after ${timeoutMs / 1000}s`));
+        }, timeoutMs);
+      }),
+    ]);
+
+    return result;
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    // If we timed out, force exit after cleanup
+    if (isTimedOut) {
+      // Give a brief moment for any cleanup, then hard exit
+      setTimeout(() => {
+        // eslint-disable-next-line no-console
+        console.error('[bdui] Force exiting due to timeout');
+        // Force exit to prevent CI hanging - this is intentional
+        process.exit(1);
+      }, 1000);
     }
   }
 }
