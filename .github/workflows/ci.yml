@@ -39,7 +39,7 @@ jobs:
         run: pnpm run build:force
 
       - name: Test (force)
-        run: pnpm run test:force
+        run: pnpm run test:force --output-logs=new-only --log-order=stream
 
       - name: Documentation lint
         run: pnpm run format:check
