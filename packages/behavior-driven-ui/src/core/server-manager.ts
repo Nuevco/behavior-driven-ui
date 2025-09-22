@@ -171,7 +171,10 @@ export class ServerManager {
       }
 
       // Parse Vite output to extract actual server URL
-      const localMatch = output.match(/➜\s+Local:\s+(https?:\/\/[^\s]+)/);
+      // Strip ALL ANSI escape codes (colors, formatting, cursor movements, etc.)
+      // eslint-disable-next-line no-control-regex
+      const cleanOutput = output.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '');
+      const localMatch = cleanOutput.match(/➜\s+Local:\s+(https?:\/\/[^\s]+)/);
       if (localMatch?.[1]) {
         this.actualServerUrl = localMatch[1];
         this.serverReady = true;
