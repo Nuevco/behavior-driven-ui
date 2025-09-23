@@ -24,8 +24,8 @@
 | 2.3  | ✅ Complete | Shared feature corpus under `features/ui`; react-sample consumes it                  | `pnpm --filter react-sample run test`, `pnpm run test:force`                                          |
 | 2.4  | ✅ Complete | Playwright driver parity for core steps (forms/selects/visibility waits)             | `pnpm --filter behavior-driven-ui test`, `pnpm --filter react-sample run test`, `pnpm run test:force` |
 | 2.5  | 🔜 Planned  | CLI driver overrides (`--driver.browser`, `--driver.headless`) & docs                | CLI integration test + guardrail commands                                                             |
-| 2.6  | 🔜 Planned  | Scenario lifecycle screenshots (opt-in) with artifact verification                   | New failing-scenario test + `pnpm run test:force`                                                     |
-| 2.7  | 🔜 Planned  | Headed debug workflow (`--headed` flag/env) documented                               | Manual headed run log + guardrails                                                                    |
+| 2.6  | 🔜 Planned  | Headed debug workflow (`--headed` flag/env) documented                               | Manual headed run log + guardrails                                                                    |
+| 2.7  | 🔜 Planned  | Scenario lifecycle screenshots (opt-in) with artifact verification                   | New failing-scenario test + `pnpm run test:force`                                                     |
 | 2.8  | 🔜 Planned  | Documentation/guardrail sync for Phase 2 outcomes                                    | `pnpm run format:check`                                                                               |
 
 ## Phase 3 – Step Library Expansion (New Behaviours)
