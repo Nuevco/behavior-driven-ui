@@ -63,6 +63,29 @@ export async function runBduiCli(argv?: string[]): Promise<void> {
     globalThis.console?.log(
       '[bdui] CI environment detected - enhanced process cleanup enabled'
     );
+
+    // Initialize wtfnode for debugging hanging processes in CI
+    try {
+      const wtf = (await import('wtfnode')) as { init(): void; dump(): void };
+      wtf.init();
+      globalThis.console?.log(
+        '[bdui] wtfnode monitoring initialized for CI debugging'
+      );
+
+      // Set up process exit handler to dump wtfnode info
+      const originalExit = globalThis.process?.exit;
+      if (originalExit && globalThis.process) {
+        globalThis.process.exit = function (code?: number) {
+          globalThis.console?.log(
+            '[bdui] Process exit requested, dumping wtfnode info:'
+          );
+          wtf.dump();
+          return originalExit.call(this, code);
+        };
+      }
+    } catch (error) {
+      globalThis.console?.warn('[bdui] Failed to initialize wtfnode:', error);
+    }
   } else {
     globalThis.console?.log('[bdui] Running in dev mode - standard cleanup');
   }

@@ -160,7 +160,25 @@ async function executeRunCore(
         console.log(
           '[bdui] CI environment detected - forcing exit after cleanup'
         );
-        process.exit(process.exitCode ?? 0);
+
+        // Dump wtfnode info before forced exit to see what's still active
+        try {
+          // Dynamic import to check if wtfnode is available
+          import('wtfnode')
+            .then((wtf: { dump(): void }) => {
+              // eslint-disable-next-line no-console
+              console.log('[bdui] Dumping wtfnode info before forced exit:');
+              wtf.dump();
+              return process.exit(process.exitCode ?? 0);
+            })
+            .catch(() => {
+              // wtfnode not available, just exit normally
+              return process.exit(process.exitCode ?? 0);
+            });
+        } catch {
+          // Fallback if dynamic import fails
+          process.exit(process.exitCode ?? 0);
+        }
       }, 1000);
     }
   }
@@ -208,8 +226,25 @@ export async function executeRun(
       setTimeout(() => {
         // eslint-disable-next-line no-console
         console.error('[bdui] Force exiting due to timeout');
-        // Force exit to prevent CI hanging - this is intentional
-        process.exit(1);
+
+        // Dump wtfnode info before timeout exit to see what caused the hang
+        try {
+          import('wtfnode')
+            .then((wtf: { dump(): void }) => {
+              // eslint-disable-next-line no-console
+              console.log('[bdui] Dumping wtfnode info due to timeout:');
+              wtf.dump();
+              // Force exit to prevent CI hanging - this is intentional
+              return process.exit(1);
+            })
+            .catch(() => {
+              // wtfnode not available, just exit
+              return process.exit(1);
+            });
+        } catch {
+          // Fallback if dynamic import fails
+          process.exit(1);
+        }
       }, 1000);
     }
   }
