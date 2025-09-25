@@ -41,7 +41,19 @@ export const getCurrentFile = (): string => {
  * @param startFrom - Directory to start searching from (defaults to caller's directory)
  */
 export const getProjectRoot = (startFrom?: string): string => {
-  const searchFrom = startFrom ?? getCurrentDir();
+  let searchFrom: string;
+  if (startFrom) {
+    searchFrom = startFrom;
+  } else {
+    // Duplicate callsites logic to get caller's directory directly
+    const sites = callsites();
+    const fileName = sites[1]?.getFileName();
+    if (!fileName) {
+      throw new Error('Could not determine current file name');
+    }
+    searchFrom = dirname(fileName);
+  }
+
   const root = pkgDir.sync(searchFrom);
   if (!root) {
     throw new Error(`Could not find package.json starting from: ${searchFrom}`);
