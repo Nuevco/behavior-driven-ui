@@ -5,7 +5,7 @@
   "description": "ESM validation app for @nuevco/free-paths",
   "scripts": {
     "build": "tsc",
-    "test": "jest",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "clean": "rm -rf dist"

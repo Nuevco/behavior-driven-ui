@@ -97,11 +97,14 @@ describe('bdui run command', () => {
       resolvedConfig: {
         projectRoot,
         configFilePath: `${projectRoot}/bdui.config.ts`,
-        baseURL: 'https://example.test',
         features: ['features/**/*.feature'],
         steps: ['custom/steps/**/*.ts'],
         driver: { kind: 'playwright', browser: 'firefox', headless: false },
-        webServer: { command: 'pnpm dev', port: 4000 },
+        webServer: {
+          command: 'pnpm dev',
+          port: 4000,
+          baseURL: 'https://example.test',
+        },
         cucumber: { tagExpression: '@smoke', order: 'random' },
         environment: { NODE_ENV: 'test' },
       },
@@ -137,7 +140,11 @@ describe('bdui run command', () => {
         ],
       },
       config: {
-        baseURL: 'https://example.test',
+        webServer: {
+          command: 'pnpm dev',
+          port: 4000,
+          baseURL: 'https://example.test',
+        },
         features: ['features/**/*.feature'],
         steps: ['custom/steps/**/*.ts'],
         driver: {
@@ -145,7 +152,6 @@ describe('bdui run command', () => {
           browser: 'firefox',
           headless: false,
         },
-        webServer: { command: 'pnpm dev', port: 4000 },
       },
       sources: {
         tagExpression: '@smoke',
@@ -165,7 +171,11 @@ describe('bdui run command', () => {
       resolvedConfig: {
         projectRoot,
         configFilePath: null,
-        baseURL: 'http://localhost:3000',
+        webServer: {
+          command: 'echo "No command configured"',
+          port: 5173,
+          baseURL: 'http://localhost:5173',
+        },
         features: ['features/**/*.feature'],
         steps: ['bdui/steps/**/*.{ts,js}'],
         driver: { kind: 'playwright', browser: 'chromium', headless: true },
@@ -198,7 +208,11 @@ describe('bdui run command', () => {
       resolvedConfig: {
         projectRoot,
         configFilePath: null,
-        baseURL: 'http://localhost:3000',
+        webServer: {
+          command: 'echo "No command configured"',
+          port: 5173,
+          baseURL: 'http://localhost:5173',
+        },
         features: ['features/**/*.feature'],
         steps: ['bdui/steps/**/*.{ts,js}'],
         driver: { kind: 'playwright', browser: 'chromium', headless: true },

@@ -28,15 +28,14 @@ export type TagsDef = Record<string, Partial<BehaviorDrivenUIConfig>>;
  * Configuration for the behavior-driven-ui framework
  */
 export interface BehaviorDrivenUIConfig {
-  /** Base URL for the application under test */
-  baseURL: string;
-
   /** Web server configuration for starting the application */
-  webServer?: {
+  webServer: {
     /** Command to start the web server */
     command: string;
     /** Port the web server runs on */
     port: number;
+    /** Base URL for the application under test */
+    baseURL: string;
     /** Whether to reuse an existing server instance */
     reuseExistingServer?: boolean;
   };

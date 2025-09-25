@@ -33,12 +33,14 @@ export const BduiDriverDefSchema = z.object({
 export interface BduiWebServerDef {
   readonly command: string;
   readonly port: number;
+  readonly baseURL: string;
   readonly reuseExistingServer?: boolean | undefined;
   // Future: add health check endpoints, ready timeouts, etc.
 }
 export const BduiWebServerDefSchema = z.object({
   command: z.string().min(1),
   port: z.number().int().positive(),
+  baseURL: z.string().url(),
   reuseExistingServer: z.boolean().optional(),
 });
 
@@ -59,7 +61,6 @@ export const BduiCucumberOptionsDefSchema = z.object({
  */
 export interface BduiCliConfigDef {
   readonly projectRoot?: string | undefined;
-  readonly baseURL?: string | undefined;
   readonly features?: BduiGlobInput | undefined;
   readonly steps?: BduiGlobInput | undefined;
   readonly driver?: BduiDriverDef | undefined;
@@ -70,7 +71,6 @@ export interface BduiCliConfigDef {
 }
 export const BduiCliConfigDefSchema = z.object({
   projectRoot: z.string().min(1).optional(),
-  baseURL: z.string().url().optional(),
   features: BduiGlobInputSchema.optional(),
   steps: BduiGlobInputSchema.optional(),
   driver: BduiDriverDefSchema.optional(),
@@ -105,22 +105,20 @@ export const BduiResolvedCucumberOptionsDefSchema = z.object({
 export interface BduiResolvedConfigDef {
   readonly projectRoot: string;
   readonly configFilePath: string | null;
-  readonly baseURL: string;
   readonly features: string[];
   readonly steps: string[];
   readonly driver: BduiResolvedDriverDef;
-  readonly webServer?: BduiWebServerDef | undefined;
+  readonly webServer: BduiWebServerDef;
   readonly cucumber: BduiResolvedCucumberOptionsDef;
   readonly environment: BduiEnvironmentVariables;
 }
 export const BduiResolvedConfigDefSchema = z.object({
   projectRoot: z.string().min(1),
   configFilePath: z.string().min(1).nullable(),
-  baseURL: z.string().url(),
   features: z.array(z.string().min(1)).min(1),
   steps: z.array(z.string().min(1)).min(1),
   driver: BduiResolvedDriverDefSchema,
-  webServer: BduiWebServerDefSchema.optional(),
+  webServer: BduiWebServerDefSchema,
   cucumber: BduiResolvedCucumberOptionsDefSchema,
   environment: BduiEnvironmentVariablesSchema,
 });

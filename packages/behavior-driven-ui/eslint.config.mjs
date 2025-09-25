@@ -49,6 +49,6 @@ export default [
     },
   },
   {
-    ignores: ['dist/**/*', '*.d.ts', '*.d.mts'],
+    ignores: ['dist/**/*', '*.d.ts', '*.d.mts', 'test-artifacts/**/*'],
   },
 ];

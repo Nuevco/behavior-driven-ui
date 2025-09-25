@@ -51,7 +51,7 @@ describe('executeInit', () => {
     // eslint-disable-next-line security/detect-non-literal-fs-filename
     const configContents = await fs.readFile(configPath, 'utf8');
 
-    expect(configContents).toContain("baseURL: 'http://localhost:3000'");
+    expect(configContents).toContain("baseURL: 'http://localhost:5173'");
     // eslint-disable-next-line security/detect-non-literal-fs-filename
     const featureKeepContents = await fs.readFile(featureKeepPath, 'utf8');
     // eslint-disable-next-line security/detect-non-literal-fs-filename

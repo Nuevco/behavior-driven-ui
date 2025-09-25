@@ -26,14 +26,15 @@ const CONFIG_FILES_IN_PRIORITY = [
   'bdui.config.cjs',
 ] as const;
 
-const DEFAULT_BASE_URL = 'http://localhost:3000';
-const DEFAULT_FEATURE_GLOBS = ['features/**/*.feature'];
-const DEFAULT_STEP_GLOBS = ['bdui/steps/**/*.{ts,js}'];
-const DEFAULT_TAG_EXPRESSION = '';
-const DEFAULT_CUCUMBER_ORDER = 'defined' as const;
-const DEFAULT_DRIVER_KIND = 'playwright' as const;
-const DEFAULT_DRIVER_BROWSER = 'chromium' as const;
-const DEFAULT_DRIVER_HEADLESS = true;
+export const DEFAULT_BASE_URL = 'http://localhost:5173';
+export const DEFAULT_FEATURE_GLOBS = ['features/**/*.feature'];
+export const DEFAULT_STEP_GLOBS = ['bdui/steps/**/*.{ts,js}'];
+export const DEFAULT_TAG_EXPRESSION = '';
+export const DEFAULT_CUCUMBER_ORDER = 'defined' as const;
+export const DEFAULT_DRIVER_KIND = 'playwright' as const;
+export const DEFAULT_DRIVER_BROWSER = 'chromium' as const;
+export const DEFAULT_DRIVER_HEADLESS = true;
+export const DEFAULT_WEBSERVER_PORT = 5173;
 
 export interface LoadBduiConfigOptions {
   readonly cwd?: string;
@@ -143,25 +144,32 @@ function buildResolvedConfig(params: {
   const driver = resolveDriverConfig(config?.driver);
   const cucumber = resolveCucumberOptions(config?.cucumber);
 
-  const resolvedBase: Omit<BduiResolvedConfigDef, 'webServer'> = {
+  // Build webServer with baseURL inside it
+  const webServer: BduiResolvedConfigDef['webServer'] = config?.webServer
+    ? {
+        command: config.webServer.command,
+        port: config.webServer.port,
+        baseURL: config.webServer.baseURL,
+        ...(config.webServer.reuseExistingServer !== undefined
+          ? { reuseExistingServer: config.webServer.reuseExistingServer }
+          : {}),
+      }
+    : {
+        command: 'echo "No command configured"',
+        port: DEFAULT_WEBSERVER_PORT,
+        baseURL: DEFAULT_BASE_URL,
+      };
+
+  return BduiResolvedConfigDefSchema.parse({
     projectRoot,
     configFilePath,
-    baseURL: config?.baseURL ?? DEFAULT_BASE_URL,
     features,
     steps,
     driver,
+    webServer,
     cucumber,
     environment: normalizeEnvironment(config?.environment),
-  };
-
-  if (config?.webServer) {
-    return BduiResolvedConfigDefSchema.parse({
-      ...resolvedBase,
-      webServer: config.webServer,
-    });
-  }
-
-  return BduiResolvedConfigDefSchema.parse(resolvedBase);
+  });
 }
 
 function isModuleNamespace(value: unknown): value is Record<string, unknown> {

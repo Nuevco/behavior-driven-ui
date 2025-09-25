@@ -5,7 +5,7 @@ export default {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   transform: {
-    '^.+\\.(ts|js)x?$': ['ts-jest', {
+    '^.+\\.tsx?$': ['ts-jest', {
       useESM: true
     }]
   },
@@ -13,5 +13,5 @@ export default {
     'node_modules/(?!(callsites|pkg-dir|@nuevco/free-paths)/)'
   ],
   testEnvironment: 'node',
-  testMatch: ['**/*.test.js', '**/*.test.ts']
+  testMatch: ['<rootDir>/src/**/*.test.js', '<rootDir>/src/**/*.test.ts']
 };

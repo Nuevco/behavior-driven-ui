@@ -249,19 +249,64 @@ function validateMocksConfig(mocks: BehaviorDrivenUIConfig['mocks']): void {
 }
 
 /**
+ * Validates tag configuration properties
+ */
+function validateTagConfig(
+  tagName: string,
+  tagConfig: Partial<BehaviorDrivenUIConfig>
+): void {
+  try {
+    // Validate individual tag override properties (not the full merged config)
+    if (tagConfig.driver) {
+      validateDriverConfig(tagConfig.driver, true);
+    }
+    if (tagConfig.webServer) {
+      validateWebServerConfig(tagConfig.webServer);
+    }
+    if (tagConfig.breakpoints) {
+      validateBreakpointsConfig(tagConfig.breakpoints);
+    }
+    if (tagConfig.mocks) {
+      validateMocksConfig(tagConfig.mocks);
+    }
+    if (tagConfig.webServer?.baseURL) {
+      validateURL(tagConfig.webServer.baseURL, 'webServer.baseURL');
+    }
+    if (tagConfig.features) {
+      validateFilePatterns(tagConfig.features, 'features');
+    }
+    if (tagConfig.steps) {
+      validateFilePatterns(tagConfig.steps, 'steps');
+    }
+  } catch (error) {
+    if (error instanceof ConfigValidationError) {
+      throw new ConfigValidationError(
+        `Invalid configuration in tag "${tagName}": ${error.message}`,
+        `tags.${tagName}.${error.field ?? 'unknown'}`,
+        error.value
+      );
+    }
+    throw error;
+  }
+}
+
+/**
  * Validates the complete configuration object
  */
 export function validateConfig(config: BehaviorDrivenUIConfig): void {
   // Validate required fields
-  if (!config.baseURL || typeof config.baseURL !== 'string') {
+  if (
+    !config.webServer.baseURL ||
+    typeof config.webServer.baseURL !== 'string'
+  ) {
     throw new ConfigValidationError(
-      'baseURL is required and must be a non-empty string',
-      'baseURL',
-      config.baseURL
+      'webServer.baseURL is required and must be a non-empty string',
+      'webServer.baseURL',
+      config.webServer.baseURL
     );
   }
 
-  validateURL(config.baseURL, 'baseURL');
+  validateURL(config.webServer.baseURL, 'webServer.baseURL');
   validateFilePatterns(config.features, 'features');
   validateFilePatterns(config.steps, 'steps');
   validateDriverConfig(config.driver);
@@ -272,39 +317,7 @@ export function validateConfig(config: BehaviorDrivenUIConfig): void {
   // Validate tags configuration (partial validation only)
   if (config.tags) {
     for (const [tagName, tagConfig] of Object.entries(config.tags)) {
-      try {
-        // Validate individual tag override properties (not the full merged config)
-        if (tagConfig.driver) {
-          validateDriverConfig(tagConfig.driver, true);
-        }
-        if (tagConfig.webServer) {
-          validateWebServerConfig(tagConfig.webServer);
-        }
-        if (tagConfig.breakpoints) {
-          validateBreakpointsConfig(tagConfig.breakpoints);
-        }
-        if (tagConfig.mocks) {
-          validateMocksConfig(tagConfig.mocks);
-        }
-        if (tagConfig.baseURL) {
-          validateURL(tagConfig.baseURL, 'baseURL');
-        }
-        if (tagConfig.features) {
-          validateFilePatterns(tagConfig.features, 'features');
-        }
-        if (tagConfig.steps) {
-          validateFilePatterns(tagConfig.steps, 'steps');
-        }
-      } catch (error) {
-        if (error instanceof ConfigValidationError) {
-          throw new ConfigValidationError(
-            `Invalid configuration in tag "${tagName}": ${error.message}`,
-            `tags.${tagName}.${error.field ?? 'unknown'}`,
-            error.value
-          );
-        }
-        throw error;
-      }
+      validateTagConfig(tagName, tagConfig);
     }
   }
 }

@@ -6,7 +6,11 @@ import { getProjectRoot } from '@nuevco/free-paths';
 
 const DEFAULT_CONFIG_FILENAME = 'bdui.config.ts';
 const SAMPLE_CONFIG_CONTENT = `export default {
-  baseURL: 'http://localhost:3000',
+  webServer: {
+    command: 'echo "No command configured"',
+    port: 5173,
+    baseURL: 'http://localhost:5173',
+  },
   features: ['features/**/*.feature'],
   steps: ['bdui/steps/**/*.{ts,js}'],
 };

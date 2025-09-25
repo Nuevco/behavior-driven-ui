@@ -1,20 +1,23 @@
-import { PathTester } from './src/tester.js';
-import { existsSync } from 'fs';
+/* eslint-disable no-console */
+const { PathTester } = require('./tester');
+const { existsSync } = require('fs');
 
-describe('Free Paths ESM Tests', () => {
+describe('Free Paths CJS Tests', () => {
   const tester = new PathTester();
 
   test('getCurrentDir returns valid path', () => {
     const dir = tester.testGetCurrentDir();
-    expect(typeof dir).toBe('string');
-    expect(existsSync(dir)).toBe(true);
-    expect(dir).toMatch(/free-paths/); // Should contain package name
+    console.log('CJS Test: getCurrentDir() returned:', dir);
+    console.log('CJS Test: __dirname is:', __dirname);
+    expect(dir).toBe(__dirname);
   });
 
   test('getCurrentFile returns valid path', () => {
     const file = tester.testGetCurrentFile();
-    expect(file).toMatch(/\.(js|ts)$/);
-    expect(existsSync(file)).toBe(true);
+    const expectedFile = __dirname + '/tester.ts';
+    console.log('CJS Test: getCurrentFile() returned:', file);
+    console.log('CJS Test: expected file is:', expectedFile);
+    expect(file).toBe(expectedFile);
   });
 
   test('getProjectRoot finds monorepo root', () => {

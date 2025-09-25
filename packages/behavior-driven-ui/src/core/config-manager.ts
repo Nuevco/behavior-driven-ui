@@ -67,27 +67,23 @@ export class ConfigManager {
       throw new Error('Config must be loaded before updating server info');
     }
 
-    const oldBaseURL = this.runtimeConfig.baseURL;
-    const oldPort = this.runtimeConfig.webServer?.port;
+    const oldBaseURL = this.runtimeConfig.webServer.baseURL;
+    const oldPort = this.runtimeConfig.webServer.port;
 
     // Update runtime config
-    this.runtimeConfig.baseURL = serverInfo.url;
-    if (this.runtimeConfig.webServer) {
-      this.runtimeConfig.webServer.port = serverInfo.port;
-    }
+    this.runtimeConfig.webServer.baseURL = serverInfo.url;
+    this.runtimeConfig.webServer.port = serverInfo.port;
 
     // Update loaded config by creating new object with merged changes
     this.loadedConfig = {
       ...this.loadedConfig,
       resolvedConfig: {
         ...this.loadedConfig.resolvedConfig,
-        baseURL: serverInfo.url,
-        webServer: this.loadedConfig.resolvedConfig.webServer
-          ? {
-              ...this.loadedConfig.resolvedConfig.webServer,
-              port: serverInfo.port,
-            }
-          : undefined,
+        webServer: {
+          ...this.loadedConfig.resolvedConfig.webServer,
+          baseURL: serverInfo.url,
+          port: serverInfo.port,
+        },
       },
     };
 
@@ -132,8 +128,12 @@ export class ConfigManager {
   private buildRuntimeConfig(
     resolvedConfig: LoadBduiConfigResult['resolvedConfig']
   ): BehaviorDrivenUIConfig {
+    const { reuseExistingServer, ...rest } = resolvedConfig.webServer;
     const config: BehaviorDrivenUIConfig = {
-      baseURL: resolvedConfig.baseURL,
+      webServer: {
+        ...rest,
+        ...(reuseExistingServer !== undefined ? { reuseExistingServer } : {}),
+      },
       features: [...resolvedConfig.features],
       steps: [...resolvedConfig.steps],
       driver: {
@@ -142,15 +142,6 @@ export class ConfigManager {
         headless: resolvedConfig.driver.headless,
       },
     };
-
-    // Optional properties
-    if (resolvedConfig.webServer) {
-      const { reuseExistingServer, ...rest } = resolvedConfig.webServer;
-      config.webServer = {
-        ...rest,
-        ...(reuseExistingServer !== undefined ? { reuseExistingServer } : {}),
-      };
-    }
 
     // Optional properties - check if they exist on resolvedConfig
     if (

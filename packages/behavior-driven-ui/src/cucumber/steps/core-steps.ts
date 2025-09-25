@@ -5,6 +5,10 @@ import type { DataTable } from '@cucumber/cucumber';
 import type { BehaviorDrivenUIConfig, Driver } from '../../core/types.js';
 import { World } from '../../core/world.js';
 import { createDriverForConfig } from '../driver/factory.js';
+import {
+  DEFAULT_BASE_URL,
+  DEFAULT_WEBSERVER_PORT,
+} from '../../cli/config/loader.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type StepDefinitionCode = (...args: any[]) => unknown | Promise<unknown>;
@@ -40,17 +44,13 @@ const DEFAULT_DRIVER_CONFIG = {
 
 function cloneConfig(base: BehaviorDrivenUIConfig): BehaviorDrivenUIConfig {
   const cloned: BehaviorDrivenUIConfig = {
-    baseURL: base.baseURL,
+    webServer: { ...base.webServer },
     features: [...base.features],
     steps: [...base.steps],
   };
 
   if (base.driver) {
     cloned.driver = { ...base.driver };
-  }
-
-  if (base.webServer) {
-    cloned.webServer = { ...base.webServer };
   }
 
   if (base.breakpoints) {
@@ -73,20 +73,29 @@ function cloneConfig(base: BehaviorDrivenUIConfig): BehaviorDrivenUIConfig {
   return cloned;
 }
 
+function buildWebServerDefaults(
+  webServerConfig?: Partial<BehaviorDrivenUIConfig['webServer']>
+): BehaviorDrivenUIConfig['webServer'] {
+  return {
+    command: webServerConfig?.command ?? 'echo "No command configured"',
+    port: webServerConfig?.port ?? DEFAULT_WEBSERVER_PORT,
+    baseURL: webServerConfig?.baseURL ?? DEFAULT_BASE_URL,
+    ...(webServerConfig?.reuseExistingServer !== undefined
+      ? { reuseExistingServer: webServerConfig.reuseExistingServer }
+      : {}),
+  };
+}
+
 function buildDefaultConfig(
   options: StepLibraryOptions
 ): BehaviorDrivenUIConfig {
   const defaultConfig = options.defaultConfig ?? {};
   const defaults: BehaviorDrivenUIConfig = {
-    baseURL: defaultConfig.baseURL ?? 'about:blank',
+    webServer: buildWebServerDefaults(defaultConfig.webServer),
     features: [...(defaultConfig.features ?? [])],
     steps: [...(defaultConfig.steps ?? [])],
     driver: { ...(defaultConfig.driver ?? DEFAULT_DRIVER_CONFIG) },
   };
-
-  if (defaultConfig.webServer) {
-    defaults.webServer = { ...defaultConfig.webServer };
-  }
 
   const breakpoints = defaultConfig.breakpoints;
   if (breakpoints) {
@@ -129,7 +138,7 @@ function registerWorldManagementSteps(methods: StepDefinitionMethods): void {
   methods.Given(
     'a BDUI world configured with base url {string}',
     async function (this: StepWorld, baseUrl: string) {
-      this.config.baseURL = baseUrl;
+      this.config.webServer.baseURL = baseUrl;
       const driver = await this.ensureTrackingDriver();
       driver.resetHistory();
       await this.beforeScenario();

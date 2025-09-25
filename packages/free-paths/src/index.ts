@@ -15,7 +15,11 @@ import pkgDir from 'pkg-dir';
  * Equivalent to __dirname but works in both ESM and CJS
  */
 export const getCurrentDir = (): string => {
-  const fileName = getCurrentFile();
+  const sites = callsites();
+  const fileName = sites[1]?.getFileName();
+  if (!fileName) {
+    throw new Error('Could not determine current file name');
+  }
   return dirname(fileName);
 };
 

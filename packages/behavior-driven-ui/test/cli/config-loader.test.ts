@@ -54,7 +54,11 @@ it('returns defaults when no config file is present', async () => {
   expect(result.rawConfig).toBeNull();
   expect(result.resolvedConfig).toMatchObject({
     projectRoot: projectDir,
-    baseURL: 'http://localhost:3000',
+    webServer: {
+      command: 'echo "No command configured"',
+      port: 5173,
+      baseURL: 'http://localhost:5173',
+    },
     features: ['features/**/*.feature'],
     steps: ['bdui/steps/**/*.{ts,js}'],
     driver: {
@@ -77,7 +81,7 @@ it('loads and validates config from the first matching file', async () => {
     projectDir,
     'bdui.config.mjs',
     `export default {
-      baseURL: 'https://example.test',
+      webServer: { command: 'echo "test"', port: 3000, baseURL: 'https://example.test' },
       features: 'tests/features/**/*.feature',
       driver: {
         browser: 'firefox',
@@ -97,14 +101,18 @@ it('loads and validates config from the first matching file', async () => {
 
   expect(result.configFilePath).toBe(expectedPath);
   expect(result.rawConfig).toMatchObject({
-    baseURL: 'https://example.test',
+    webServer: {
+      command: 'echo "test"',
+      port: 3000,
+      baseURL: 'https://example.test',
+    },
     features: 'tests/features/**/*.feature',
     driver: { browser: 'firefox' },
     cucumber: { tagExpression: '@smoke' },
     environment: { NODE_ENV: 'test' },
   });
   expect(result.resolvedConfig).toMatchObject({
-    baseURL: 'https://example.test',
+    webServer: { baseURL: 'https://example.test' },
     features: ['tests/features/**/*.feature'],
     steps: ['bdui/steps/**/*.{ts,js}'],
     driver: { browser: 'firefox', headless: true },
@@ -120,7 +128,7 @@ it('uses an explicit config override when provided', async () => {
   await writeConfig(
     projectDir,
     'bdui.config.mjs',
-    'export default { baseURL: "https://example.test" };'
+    'export default { webServer: { command: "echo test", port: 3000, baseURL: "https://example.test" } };'
   );
 
   const overrideDir = await createTempProject();
@@ -130,7 +138,11 @@ it('uses an explicit config override when provided', async () => {
     overrideDir,
     'custom.config.mjs',
     `export default {
-      baseURL: 'https://override.test',
+      webServer: {
+        command: 'echo "test"',
+        port: 3000,
+        baseURL: 'https://override.test'
+      },
       driver: { headless: false }
     };`
   );
@@ -142,7 +154,7 @@ it('uses an explicit config override when provided', async () => {
   });
 
   expect(result.configFilePath).toBe(overridePath);
-  expect(result.resolvedConfig.baseURL).toBe('https://override.test');
+  expect(result.resolvedConfig.webServer.baseURL).toBe('https://override.test');
   expect(result.resolvedConfig.driver.headless).toBe(false);
 });
 

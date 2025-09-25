@@ -117,8 +117,8 @@ export class World {
     await this.ensureDriver();
 
     // Navigate to base URL if configured
-    if (this.config.baseURL) {
-      await this.driver.goto(this.config.baseURL);
+    if (this.config.webServer.baseURL) {
+      await this.driver.goto(this.config.webServer.baseURL);
     }
   }
 
